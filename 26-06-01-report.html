@@ -1,0 +1,1709 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-06-02 盘前预测快照 | Top2 结构化研究</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --surface: rgba(255, 255, 255, 0.78);
+      --surface-solid: #ffffff;
+      --ink: #1d1d1f;
+      --muted: #6e6e73;
+      --soft: #86868b;
+      --line: rgba(29, 29, 31, 0.12);
+      --line-strong: rgba(29, 29, 31, 0.2);
+      --accent: #0a84ff;
+      --accent-dark: #0057b8;
+      --good: #1a7f37;
+      --warn: #b56a00;
+      --risk: #c9342f;
+      --coal: #3d3a34;
+      --ai: #245e8f;
+      --radius: 18px;
+      --radius-sm: 10px;
+      --shadow: 0 18px 48px rgba(0, 0, 0, 0.08);
+      --max: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, #fbfbfd 0%, var(--bg) 34%, #ffffff 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", Arial, sans-serif;
+      line-height: 1.65;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .progress {
+      position: fixed;
+      z-index: 50;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: transparent;
+    }
+
+    .progress span {
+      display: block;
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #65b8ff);
+      transition: width 120ms ease-out;
+    }
+
+    .shell {
+      width: min(var(--max), calc(100% - 36px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      min-height: 92vh;
+      display: grid;
+      align-items: center;
+      padding: 86px 0 42px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
+      gap: 34px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px rgba(10, 132, 255, 0.14);
+    }
+
+    h1 {
+      max-width: 820px;
+      margin: 0;
+      font-size: 56px;
+      line-height: 1.06;
+      font-weight: 760;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 760px;
+      margin: 22px 0 0;
+      color: #424245;
+      font-size: 19px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 26px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 6px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      color: #424245;
+      font-size: 13px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    .hero-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+
+    .panel-top {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 18px;
+      padding: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .score-ring {
+      --score: 70%;
+      width: 138px;
+      height: 138px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at center, #fff 0 58%, transparent 59%),
+        conic-gradient(var(--accent) 0 var(--score), #e8e8ed var(--score) 100%);
+      box-shadow: inset 0 0 0 1px rgba(29, 29, 31, 0.06);
+    }
+
+    .score-ring strong {
+      display: block;
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 780;
+      text-align: center;
+    }
+
+    .score-ring span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .phase h2 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    .phase p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .mini-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--line);
+    }
+
+    .mini-metric {
+      min-height: 92px;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .mini-metric b {
+      display: block;
+      font-size: 22px;
+      line-height: 1.1;
+    }
+
+    .mini-metric span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .nav-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-top: 1px solid rgba(255, 255, 255, 0.64);
+      border-bottom: 1px solid var(--line);
+      background: rgba(251, 251, 253, 0.82);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav {
+      width: min(var(--max), calc(100% - 28px));
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 auto;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav a {
+      flex: 0 0 auto;
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      transition: color 160ms ease, background 160ms ease;
+    }
+
+    .nav a:hover,
+    .nav a.active {
+      color: var(--ink);
+      background: rgba(29, 29, 31, 0.07);
+    }
+
+    section.band {
+      padding: 76px 0;
+      border-bottom: 1px solid rgba(29, 29, 31, 0.08);
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 22px;
+      margin-bottom: 24px;
+    }
+
+    .section-kicker {
+      margin: 0 0 8px;
+      color: var(--accent-dark);
+      font-size: 13px;
+      font-weight: 760;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 36px;
+      line-height: 1.16;
+      letter-spacing: 0;
+    }
+
+    .section-note {
+      max-width: 520px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0;
+    }
+
+    .segmented {
+      display: inline-flex;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .segmented button,
+    .copy-btn {
+      min-height: 36px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-weight: 750;
+      font-size: 13px;
+      transition: background 150ms ease, color 150ms ease, transform 150ms ease;
+    }
+
+    .segmented button {
+      padding: 7px 14px;
+    }
+
+    .segmented button[aria-pressed="true"] {
+      color: #fff;
+      background: var(--ink);
+    }
+
+    .copy-btn {
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .copy-btn:hover,
+    .segmented button:hover {
+      transform: translateY(-1px);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-solid);
+      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+    }
+
+    .top-card {
+      position: relative;
+      padding: 24px;
+    }
+
+    .top-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), #9bd0ff);
+    }
+
+    .top-card.coal::before {
+      background: linear-gradient(90deg, var(--coal), #9c9383);
+    }
+
+    .top-card.ai::before {
+      background: linear-gradient(90deg, var(--ai), #87b9df);
+    }
+
+    .rank-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 14px;
+    }
+
+    .rank {
+      display: inline-grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #f5f5f7;
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .ticker h3 {
+      margin: 0;
+      font-size: 27px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .ticker small {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 16px 0 18px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #f9f9fb;
+      color: #3a3a3c;
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .badge.good {
+      color: var(--good);
+      background: rgba(26, 127, 55, 0.08);
+      border-color: rgba(26, 127, 55, 0.18);
+    }
+
+    .badge.warn {
+      color: var(--warn);
+      background: rgba(181, 106, 0, 0.08);
+      border-color: rgba(181, 106, 0, 0.2);
+    }
+
+    .badge.risk {
+      color: var(--risk);
+      background: rgba(201, 52, 47, 0.08);
+      border-color: rgba(201, 52, 47, 0.2);
+    }
+
+    .meter {
+      margin: 18px 0 4px;
+    }
+
+    .meter-row {
+      display: grid;
+      grid-template-columns: 92px 1fr 44px;
+      gap: 10px;
+      align-items: center;
+      margin: 10px 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 740;
+    }
+
+    .bar {
+      height: 8px;
+      border-radius: 999px;
+      background: #e8e8ed;
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      width: var(--w);
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), #65b8ff);
+    }
+
+    .top-card.coal .bar span {
+      background: linear-gradient(90deg, var(--coal), #988c7c);
+    }
+
+    .top-card.ai .bar span {
+      background: linear-gradient(90deg, var(--ai), #73abd6);
+    }
+
+    .one-line {
+      margin: 16px 0 0;
+      color: #333336;
+      font-size: 15px;
+    }
+
+    details {
+      margin-top: 16px;
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+    }
+
+    summary {
+      cursor: pointer;
+      color: var(--accent-dark);
+      font-size: 13px;
+      font-weight: 800;
+      outline: none;
+    }
+
+    details p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .theme-card {
+      min-height: 198px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .theme-card.dim {
+      background: rgba(255, 255, 255, 0.66);
+    }
+
+    .theme-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .theme-head h3 {
+      margin: 0;
+      font-size: 21px;
+      letter-spacing: 0;
+    }
+
+    .strength {
+      min-width: 58px;
+      text-align: right;
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 780;
+    }
+
+    .theme-card p {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .heat {
+      margin-top: 18px;
+      height: 8px;
+      border-radius: 999px;
+      background: #ececf0;
+      overflow: hidden;
+    }
+
+    .heat span {
+      display: block;
+      width: var(--w);
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #8e8e93, var(--accent));
+    }
+
+    .table-shell {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.035);
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 800px;
+    }
+
+    th,
+    td {
+      padding: 15px 16px;
+      border-bottom: 1px solid rgba(29, 29, 31, 0.08);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      background: #fbfbfd;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .num {
+      font-variant-numeric: tabular-nums;
+      font-weight: 780;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .field {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--ink);
+      padding: 8px 14px;
+      outline: none;
+    }
+
+    .field:focus,
+    button:focus-visible,
+    a:focus-visible,
+    summary:focus-visible {
+      outline: 3px solid rgba(10, 132, 255, 0.24);
+      outline-offset: 2px;
+    }
+
+    .k-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .k-box {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: #fff;
+    }
+
+    .k-box span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .k-box b {
+      display: block;
+      margin-top: 6px;
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .audit-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .timeline {
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .step {
+      position: relative;
+      display: grid;
+      grid-template-columns: 54px 1fr;
+      gap: 14px;
+      padding-bottom: 24px;
+    }
+
+    .step:last-child {
+      padding-bottom: 0;
+    }
+
+    .step::before {
+      content: "";
+      position: absolute;
+      left: 26px;
+      top: 42px;
+      bottom: 0;
+      width: 1px;
+      background: var(--line);
+    }
+
+    .step:last-child::before {
+      display: none;
+    }
+
+    .step-code {
+      display: grid;
+      place-items: center;
+      width: 54px;
+      height: 38px;
+      border-radius: 999px;
+      background: #f5f5f7;
+      font-weight: 820;
+    }
+
+    .step h3 {
+      margin: 0;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+
+    .step p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .audit-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .audit-item {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: #fff;
+    }
+
+    .audit-item b {
+      font-size: 14px;
+    }
+
+    .audit-item span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .risk-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .risk-card {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .risk-card h3 {
+      min-height: 54px;
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    .risk-card p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .disclaimer {
+      padding: 34px;
+      border-radius: var(--radius);
+      background: #111114;
+      color: #f5f5f7;
+    }
+
+    .disclaimer h2 {
+      font-size: 25px;
+    }
+
+    .disclaimer p {
+      margin: 14px 0 0;
+      color: rgba(245, 245, 247, 0.76);
+      font-size: 14px;
+    }
+
+    .view-audit .summary-only,
+    .view-summary .audit-only {
+      display: none;
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 420ms ease, transform 420ms ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .empty-row {
+      display: none;
+      padding: 22px;
+      color: var(--muted);
+      text-align: center;
+      border-top: 1px solid var(--line);
+      background: #fff;
+    }
+
+    @media (max-width: 920px) {
+      .hero {
+        min-height: auto;
+        padding-top: 58px;
+      }
+
+      .hero-grid,
+      .grid-2,
+      .grid-3,
+      .theme-grid,
+      .audit-grid,
+      .risk-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 42px;
+      }
+
+      h2 {
+        font-size: 30px;
+      }
+
+      .section-head {
+        display: block;
+      }
+
+      .section-note {
+        margin-top: 12px;
+      }
+
+      .k-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .shell {
+        width: min(100% - 24px, var(--max));
+      }
+
+      .hero {
+        padding-top: 42px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      .lead {
+        font-size: 16px;
+      }
+
+      .panel-top {
+        grid-template-columns: 1fr;
+      }
+
+      .score-ring {
+        width: 128px;
+        height: 128px;
+      }
+
+      .mini-metrics {
+        grid-template-columns: 1fr;
+      }
+
+      section.band {
+        padding: 54px 0;
+      }
+
+      .toolbar,
+      .filters {
+        align-items: stretch;
+      }
+
+      .segmented,
+      .field,
+      .copy-btn {
+        width: 100%;
+      }
+
+      .segmented button {
+        flex: 1;
+      }
+
+      .k-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      table {
+        min-width: 0;
+      }
+
+      .responsive thead {
+        display: none;
+      }
+
+      .responsive,
+      .responsive tbody,
+      .responsive tr,
+      .responsive td {
+        display: block;
+        width: 100%;
+      }
+
+      .responsive tr {
+        padding: 14px 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .responsive tr:last-child {
+        border-bottom: 0;
+      }
+
+      .responsive td {
+        display: grid;
+        grid-template-columns: 112px 1fr;
+        gap: 12px;
+        padding: 8px 16px;
+        border: 0;
+      }
+
+      .responsive td::before {
+        content: attr(data-label);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .audit-item {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body class="view-summary">
+  <div class="progress" aria-hidden="true"><span id="scrollProgress"></span></div>
+
+  <header class="hero shell" id="top">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow"><span class="dot"></span>盘前预测快照 · EvidenceCutoff 2026-06-02 09:08</p>
+        <h1>启动/扩散期中的煤炭与 AI 应用 Top2 研究</h1>
+        <p class="lead">T 日为 2026-06-01，T+1 为 2026-06-02。结论为存在候选：昊华能源与视觉中国进入 Top2，但均因风险折扣维持 4★。</p>
+        <div class="chips" aria-label="时间基线">
+          <span class="chip">模式=盘前预测快照</span>
+          <span class="chip">T 日=2026-06-01</span>
+          <span class="chip">T+1=2026-06-02</span>
+          <span class="chip">生成时间=2026-06-02 09:08</span>
+        </div>
+      </div>
+
+      <aside class="hero-panel" aria-label="市场阶段摘要">
+        <div class="panel-top">
+          <div class="score-ring" style="--score: 70%">
+            <div>
+              <strong>7/10</strong>
+              <span>情绪分</span>
+            </div>
+          </div>
+          <div class="phase">
+            <h2>市场阶段：启动/扩散期</h2>
+            <p>主攻方向为煤炭、AI 应用。6月1日涨停数量高、上涨家数多，但指数分化，创业板指跌2.15%，两市成交额较前一交易日缩量4443亿。</p>
+          </div>
+        </div>
+        <div class="mini-metrics">
+          <div class="mini-metric"><b>Top2</b><span>存在候选</span></div>
+          <div class="mini-metric"><b>4★</b><span>最高星级</span></div>
+          <div class="mini-metric"><b>K6 yes</b><span>两只候选均通过</span></div>
+          <div class="mini-metric"><b>无 Fatal</b><span>Veto 未触发致命项</span></div>
+        </div>
+      </aside>
+    </div>
+  </header>
+
+  <div class="nav-wrap">
+    <nav class="nav" aria-label="页面导航">
+      <a href="#summary">摘要</a>
+      <a href="#top2">Top2</a>
+      <a href="#themes">主线全景</a>
+      <a href="#candidates">候选矩阵</a>
+      <a href="#compression">K 值压缩</a>
+      <a href="#audit">审计基线</a>
+      <a href="#risk">风险</a>
+      <a href="#disclaimer">声明</a>
+    </nav>
+  </div>
+
+  <main>
+    <section class="band" id="summary">
+      <div class="shell">
+        <div class="section-head fade-in">
+          <div>
+            <p class="section-kicker">A. 一屏摘要</p>
+            <h2>结论先行，风险同步展示</h2>
+          </div>
+          <p class="section-note">页面保留原始研究结论，不扩容 Top2，不加入 2026-06-02 09:08 后信息。</p>
+        </div>
+
+        <div class="toolbar fade-in">
+          <div class="segmented" role="group" aria-label="视图切换">
+            <button type="button" data-view="summary" aria-pressed="true">摘要视图</button>
+            <button type="button" data-view="audit" aria-pressed="false">审计视图</button>
+          </div>
+          <button class="copy-btn" type="button" id="copySummary">复制核心结论</button>
+        </div>
+
+        <div class="grid-3 fade-in">
+          <article class="card top-card">
+            <div class="rank-line">
+              <div class="ticker">
+                <h3>昊华能源</h3>
+                <small>601101 · 排名 1</small>
+              </div>
+              <span class="rank">1</span>
+            </div>
+            <div class="badges">
+              <span class="badge good">Final 80</span>
+              <span class="badge">Confidence 72</span>
+              <span class="badge good">K6 yes</span>
+              <span class="badge warn">4★</span>
+            </div>
+            <p class="one-line">主线强、池内识别度最高，但异动公告压低 5★资格。</p>
+          </article>
+
+          <article class="card top-card">
+            <div class="rank-line">
+              <div class="ticker">
+                <h3>视觉中国</h3>
+                <small>000681 · 排名 2</small>
+              </div>
+              <span class="rank">2</span>
+            </div>
+            <div class="badges">
+              <span class="badge good">Final 79</span>
+              <span class="badge">Confidence 70</span>
+              <span class="badge good">K6 yes</span>
+              <span class="badge warn">4★</span>
+            </div>
+            <p class="one-line">题材、业务映射与池内稀缺性较完整，但受池外高位替代约束。</p>
+          </article>
+
+          <article class="card top-card">
+            <div class="rank-line">
+              <div class="ticker">
+                <h3>非占优过滤</h3>
+                <small>同主题只保留最强映射</small>
+              </div>
+              <span class="rank">K</span>
+            </div>
+            <div class="badges">
+              <span class="badge good">煤炭保留昊华</span>
+              <span class="badge good">AI 保留视觉</span>
+              <span class="badge">Top2 不扩容</span>
+            </div>
+            <p class="one-line">郑州煤电、达实智能、鸿博股份等被同主题或主线强度不足压制。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="top2">
+      <div class="shell">
+        <div class="section-head fade-in">
+          <div>
+            <p class="section-kicker">Top2 候选</p>
+            <h2>两只候选的强项与折扣</h2>
+          </div>
+          <p class="section-note">以主线强度、池内位置、K6 正交增量和风险折扣压缩出最终分。</p>
+        </div>
+
+        <div class="grid-2">
+          <article class="card top-card coal fade-in">
+            <div class="rank-line">
+              <div class="ticker">
+                <h3>昊华能源</h3>
+                <small>601101 · 煤炭 -> 动力煤/焦煤</small>
+              </div>
+              <span class="rank">1</span>
+            </div>
+            <div class="badges">
+              <span class="badge good">池内煤炭前排</span>
+              <span class="badge good">K6 yes</span>
+              <span class="badge">Veto 无</span>
+              <span class="badge warn">异动公告折扣</span>
+            </div>
+            <div class="meter" aria-label="昊华能源分值">
+              <div class="meter-row"><span>Final</span><div class="bar"><span style="--w: 80%"></span></div><b>80</b></div>
+              <div class="meter-row"><span>Confidence</span><div class="bar"><span style="--w: 72%"></span></div><b>72</b></div>
+            </div>
+            <p class="one-line">煤炭主线强度最高，池内煤炭票中识别度优于郑州煤电。</p>
+            <details>
+              <summary>展开研究说明</summary>
+              <p>6月1日煤炭股集体走强，昊华能源3天2板并登上龙虎榜，成交额6.68亿元；异动公告确认生产经营正常、无应披露未披露重大事项，但同时提示短期波动和业绩波动风险，因此只给 4★。</p>
+            </details>
+          </article>
+
+          <article class="card top-card ai fade-in">
+            <div class="rank-line">
+              <div class="ticker">
+                <h3>视觉中国</h3>
+                <small>000681 · AI 应用 -> AI文娱/内容数据</small>
+              </div>
+              <span class="rank">2</span>
+            </div>
+            <div class="badges">
+              <span class="badge good">池内 AI 应用前排</span>
+              <span class="badge good">K6 yes</span>
+              <span class="badge">Veto 无</span>
+              <span class="badge warn">主业承压折扣</span>
+            </div>
+            <div class="meter" aria-label="视觉中国分值">
+              <div class="meter-row"><span>Final</span><div class="bar"><span style="--w: 79%"></span></div><b>79</b></div>
+              <div class="meter-row"><span>Confidence</span><div class="bar"><span style="--w: 70%"></span></div><b>70</b></div>
+            </div>
+            <p class="one-line">AI应用线强，视觉中国与“AI智能+内容数据+应用场景”存在直接业务映射。</p>
+            <details>
+              <summary>展开研究说明</summary>
+              <p>公司披露超7亿多模态内容数据并推进AI赋能版权交易；6月1日 AI 应用持续发酵，MiniMax M3消息增强多模态方向。但5月26日实控人减持计划完成、主业承压属于风险折扣，因此只给 4★。</p>
+            </details>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="themes">
+      <div class="shell">
+        <div class="section-head fade-in">
+          <div>
+            <p class="section-kicker">B2. 大盘与主题全景</p>
+            <h2>主攻方向与池内映射</h2>
+          </div>
+          <p class="section-note">煤炭和 AI 应用为主攻方向，其他方向多为局部分支或 K6 增量不足。</p>
+        </div>
+
+        <div class="theme-grid">
+          <article class="theme-card fade-in">
+            <div class="theme-head">
+              <h3>煤炭</h3>
+              <div class="strength">83</div>
+            </div>
+            <div class="badges">
+              <span class="badge good">活跃主线</span>
+              <span class="badge">发酵</span>
+              <span class="badge">昊华能源、郑州煤电</span>
+            </div>
+            <p>印尼出口新政、焦煤期货主力触及涨停，煤炭板块涨停潮；煤炭概念涨4.06%。昊华保留；郑州煤电被同主题非占优过滤压制。</p>
+            <div class="heat" aria-hidden="true"><span style="--w: 83%"></span></div>
+          </article>
+
+          <article class="theme-card fade-in">
+            <div class="theme-head">
+              <h3>AI 应用</h3>
+              <div class="strength">80</div>
+            </div>
+            <div class="badges">
+              <span class="badge good">活跃主线</span>
+              <span class="badge">发酵</span>
+              <span class="badge">视觉中国、达实智能、鸿博股份</span>
+            </div>
+            <p>AI应用早盘逆势走强，视觉中国、掌阅科技等涨停；午后软通动力、光云科技等继续强化。视觉中国保留。</p>
+            <div class="heat" aria-hidden="true"><span style="--w: 80%"></span></div>
+          </article>
+
+          <article class="theme-card dim fade-in">
+            <div class="theme-head">
+              <h3>电网设备/SST</h3>
+              <div class="strength">58</div>
+            </div>
+            <div class="badges">
+              <span class="badge">活跃分支</span>
+              <span class="badge">启动</span>
+              <span class="badge">顺钠股份</span>
+            </div>
+            <p>顺钠股份随电网设备异动，SST储备期逻辑存在。池外替代强，K3/K6不足。</p>
+            <div class="heat" aria-hidden="true"><span style="--w: 58%"></span></div>
+          </article>
+
+          <article class="theme-card dim fade-in">
+            <div class="theme-head">
+              <h3>其他局部分支</h3>
+              <div class="strength">40-62</div>
+            </div>
+            <div class="badges">
+              <span class="badge">清洁能源</span>
+              <span class="badge">化工</span>
+              <span class="badge">地产</span>
+              <span class="badge">燃气</span>
+              <span class="badge">航运</span>
+            </div>
+            <p>湖南发展、黑猫股份、华丽家族、国新能源、宁波海运不满足 Top2 的 K6 正交增量强度。</p>
+            <div class="heat" aria-hidden="true"><span style="--w: 52%"></span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="candidates">
+      <div class="shell">
+        <div class="section-head fade-in">
+          <div>
+            <p class="section-kicker">B3. 候选排序与剔除矩阵</p>
+            <h2>可筛选候选池</h2>
+          </div>
+          <p class="section-note">输入股票名称、代码或状态筛选；也可按资格与 Final 排序快速定位。</p>
+        </div>
+
+        <div class="toolbar fade-in">
+          <div class="filters">
+            <label class="sr-only" for="candidateSearch">搜索候选</label>
+            <input class="field" id="candidateSearch" type="search" placeholder="搜索个股、代码、主线、Veto">
+            <label class="sr-only" for="candidateFilter">资格筛选</label>
+            <select class="field" id="candidateFilter">
+              <option value="all">全部候选</option>
+              <option value="top2">仅 Top2</option>
+              <option value="rejected">仅剔除</option>
+              <option value="major">Veto Major</option>
+            </select>
+            <label class="sr-only" for="candidateSort">排序</label>
+            <select class="field" id="candidateSort">
+              <option value="rank">按排名</option>
+              <option value="final">按 Final</option>
+              <option value="confidence">按 Confidence</option>
+            </select>
+          </div>
+          <span class="chip" id="candidateCount">11 只候选</span>
+        </div>
+
+        <div class="table-shell fade-in">
+          <div class="table-scroll">
+            <table class="responsive" aria-label="候选排序与剔除矩阵">
+              <thead>
+                <tr>
+                  <th>排名</th>
+                  <th>个股</th>
+                  <th>Final</th>
+                  <th>Confidence</th>
+                  <th>星级</th>
+                  <th>K6</th>
+                  <th>Veto</th>
+                  <th>Top2资格 / 剔除原因</th>
+                </tr>
+              </thead>
+              <tbody id="candidateRows">
+                <tr data-rank="1" data-final="80" data-confidence="72" data-status="top2" data-veto="无" data-search="昊华能源 601101 煤炭 top2 k6 yes 无">
+                  <td data-label="排名" class="num">1</td>
+                  <td data-label="个股"><b>昊华能源</b><br><span class="muted">601101</span></td>
+                  <td data-label="Final" class="num">80</td>
+                  <td data-label="Confidence" class="num">72</td>
+                  <td data-label="星级"><span class="badge warn">4★</span></td>
+                  <td data-label="K6"><span class="badge good">yes</span></td>
+                  <td data-label="Veto"><span class="badge">无</span></td>
+                  <td data-label="资格 / 原因"><span class="badge good">是</span> 池内煤炭前排。</td>
+                </tr>
+                <tr data-rank="2" data-final="79" data-confidence="70" data-status="top2" data-veto="无" data-search="视觉中国 000681 ai 应用 top2 k6 yes 无">
+                  <td data-label="排名" class="num">2</td>
+                  <td data-label="个股"><b>视觉中国</b><br><span class="muted">000681</span></td>
+                  <td data-label="Final" class="num">79</td>
+                  <td data-label="Confidence" class="num">70</td>
+                  <td data-label="星级"><span class="badge warn">4★</span></td>
+                  <td data-label="K6"><span class="badge good">yes</span></td>
+                  <td data-label="Veto"><span class="badge">无</span></td>
+                  <td data-label="资格 / 原因"><span class="badge good">是</span> 池内 AI 应用前排。</td>
+                </tr>
+                <tr data-rank="3" data-final="67" data-confidence="63" data-status="rejected" data-veto="Major" data-search="郑州煤电 煤炭 rejected major highly uncertain">
+                  <td data-label="排名" class="num">3</td>
+                  <td data-label="个股"><b>郑州煤电</b></td>
+                  <td data-label="Final" class="num">67</td>
+                  <td data-label="Confidence" class="num">63</td>
+                  <td data-label="星级"><span class="badge">3★</span></td>
+                  <td data-label="K6"><span class="badge warn">highly uncertain</span></td>
+                  <td data-label="Veto"><span class="badge risk">Major</span></td>
+                  <td data-label="资格 / 原因">否：同主题被昊华与池外煤炭前排压制，且换手较高。</td>
+                </tr>
+                <tr data-rank="4" data-final="65" data-confidence="62" data-status="rejected" data-veto="无" data-search="湖南发展 清洁能源 rejected highly uncertain">
+                  <td data-label="排名" class="num">4</td>
+                  <td data-label="个股"><b>湖南发展</b></td>
+                  <td data-label="Final" class="num">65</td>
+                  <td data-label="Confidence" class="num">62</td>
+                  <td data-label="星级"><span class="badge">3★</span></td>
+                  <td data-label="K6"><span class="badge warn">highly uncertain</span></td>
+                  <td data-label="Veto"><span class="badge">无</span></td>
+                  <td data-label="资格 / 原因">否：高换手，清洁能源线不是主攻方向。</td>
+                </tr>
+                <tr data-rank="5" data-final="64" data-confidence="61" data-status="rejected" data-veto="Major" data-search="达实智能 ai 应用 rejected major highly uncertain">
+                  <td data-label="排名" class="num">5</td>
+                  <td data-label="个股"><b>达实智能</b></td>
+                  <td data-label="Final" class="num">64</td>
+                  <td data-label="Confidence" class="num">61</td>
+                  <td data-label="星级"><span class="badge">2★</span></td>
+                  <td data-label="K6"><span class="badge warn">highly uncertain</span></td>
+                  <td data-label="Veto"><span class="badge risk">Major</span></td>
+                  <td data-label="资格 / 原因">否：AI应用内位置弱于视觉中国与池外软件前排。</td>
+                </tr>
+                <tr data-rank="6" data-final="0" data-confidence="0" data-status="rejected" data-veto="无" data-search="顺钠股份 电网设备 sst rejected">
+                  <td data-label="排名" class="num">-</td>
+                  <td data-label="个股"><b>顺钠股份</b></td>
+                  <td data-label="Final">-</td>
+                  <td data-label="Confidence">-</td>
+                  <td data-label="星级">-</td>
+                  <td data-label="K6">-</td>
+                  <td data-label="Veto">-</td>
+                  <td data-label="资格 / 原因">电网设备分支可确认，但池外思源电气、特变电工等替代强，K3不足。</td>
+                </tr>
+                <tr data-rank="7" data-final="0" data-confidence="0" data-status="rejected" data-veto="无" data-search="黑猫股份 超导电炭黑 化工 rejected">
+                  <td data-label="排名" class="num">-</td>
+                  <td data-label="个股"><b>黑猫股份</b></td>
+                  <td data-label="Final">-</td>
+                  <td data-label="Confidence">-</td>
+                  <td data-label="星级">-</td>
+                  <td data-label="K6">-</td>
+                  <td data-label="Veto">-</td>
+                  <td data-label="资格 / 原因">超导电炭黑逻辑存在，但主线强度与增量确认不足；仅局部分支。</td>
+                </tr>
+                <tr data-rank="8" data-final="0" data-confidence="0" data-status="rejected" data-veto="无" data-search="鸿博股份 ai 算力 rejected">
+                  <td data-label="排名" class="num">-</td>
+                  <td data-label="个股"><b>鸿博股份</b></td>
+                  <td data-label="Final">-</td>
+                  <td data-label="Confidence">-</td>
+                  <td data-label="星级">-</td>
+                  <td data-label="K6">-</td>
+                  <td data-label="Veto">-</td>
+                  <td data-label="资格 / 原因">AI/算力标签不够直接，主营和市场主线映射弱，K1/K3不足。</td>
+                </tr>
+                <tr data-rank="9" data-final="0" data-confidence="0" data-status="rejected" data-veto="无" data-search="华丽家族 地产 rejected">
+                  <td data-label="排名" class="num">-</td>
+                  <td data-label="个股"><b>华丽家族</b></td>
+                  <td data-label="Final">-</td>
+                  <td data-label="Confidence">-</td>
+                  <td data-label="星级">-</td>
+                  <td data-label="K6">-</td>
+                  <td data-label="Veto">-</td>
+                  <td data-label="资格 / 原因">地产局部异动，主线强度不足。</td>
+                </tr>
+                <tr data-rank="10" data-final="0" data-confidence="0" data-status="rejected" data-veto="无" data-search="国新能源 燃气 rejected">
+                  <td data-label="排名" class="num">-</td>
+                  <td data-label="个股"><b>国新能源</b></td>
+                  <td data-label="Final">-</td>
+                  <td data-label="Confidence">-</td>
+                  <td data-label="星级">-</td>
+                  <td data-label="K6">-</td>
+                  <td data-label="Veto">-</td>
+                  <td data-label="资格 / 原因">燃气异动可确认，但非主攻方向，K6不足。</td>
+                </tr>
+                <tr data-rank="11" data-final="0" data-confidence="0" data-status="rejected" data-veto="无" data-search="宁波海运 航运 rejected">
+                  <td data-label="排名" class="num">-</td>
+                  <td data-label="个股"><b>宁波海运</b></td>
+                  <td data-label="Final">-</td>
+                  <td data-label="Confidence">-</td>
+                  <td data-label="星级">-</td>
+                  <td data-label="K6">-</td>
+                  <td data-label="Veto">-</td>
+                  <td data-label="资格 / 原因">航运分支有业绩改善逻辑，但板块层级与接力增量不足。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="empty-row" id="emptyCandidates">没有匹配的候选。</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="compression">
+      <div class="shell">
+        <div class="section-head fade-in">
+          <div>
+            <p class="section-kicker">B4. Top2 候选压缩卡片</p>
+            <h2>K1-K6 与 Final 一致性</h2>
+          </div>
+          <p class="section-note audit-only">数学一致性：Final = round(min(RawScore, MarketCap, VetoCap, ShortBoardCap, DominanceCap))。</p>
+        </div>
+
+        <div class="grid-2">
+          <article class="card top-card coal fade-in">
+            <div class="rank-line">
+              <div class="ticker">
+                <h3>昊华能源</h3>
+                <small>BaseScore 83 · Penalty -3 · Final 80</small>
+              </div>
+              <span class="rank">80</span>
+            </div>
+            <div class="k-grid" aria-label="昊华能源 K 值">
+              <div class="k-box"><span>K1</span><b>19</b></div>
+              <div class="k-box"><span>K2</span><b>17</b></div>
+              <div class="k-box"><span>K3</span><b>15</b></div>
+              <div class="k-box"><span>K4</span><b>12</b></div>
+              <div class="k-box"><span>K5</span><b>10</b></div>
+              <div class="k-box"><span>K6</span><b>10</b></div>
+            </div>
+          </article>
+
+          <article class="card top-card ai fade-in">
+            <div class="rank-line">
+              <div class="ticker">
+                <h3>视觉中国</h3>
+                <small>BaseScore 81 · Penalty -2 · Final 79</small>
+              </div>
+              <span class="rank">79</span>
+            </div>
+            <div class="k-grid" aria-label="视觉中国 K 值">
+              <div class="k-box"><span>K1</span><b>18</b></div>
+              <div class="k-box"><span>K2</span><b>16</b></div>
+              <div class="k-box"><span>K3</span><b>15</b></div>
+              <div class="k-box"><span>K4</span><b>11</b></div>
+              <div class="k-box"><span>K5</span><b>11</b></div>
+              <div class="k-box"><span>K6</span><b>10</b></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="audit">
+      <div class="shell">
+        <div class="section-head fade-in">
+          <div>
+            <p class="section-kicker">B1 / B5. 快照与审计基线</p>
+            <h2>时间因果与输出清洁度</h2>
+          </div>
+          <p class="section-note">W3 不适用，未进入 09:15 集合竞价窗口；所有信息固定在 2026-06-02 09:08 前。</p>
+        </div>
+
+        <div class="audit-grid">
+          <div class="timeline fade-in" aria-label="审计时间线">
+            <div class="step">
+              <div class="step-code">W0</div>
+              <div>
+                <h3>2026-05-29 15:00 前后信息 -> 2026-06-01 09:15</h3>
+                <p>盘前预测的前置窗口。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-code">W1</div>
+              <div>
+                <h3>2026-06-01 09:15 -> 2026-06-01 15:00</h3>
+                <p>T 日盘中与收盘结构。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-code">W2</div>
+              <div>
+                <h3>2026-06-01 15:00 -> 2026-06-02 09:08</h3>
+                <p>盘后至 EvidenceCutoff 的公开信息。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-code">W3</div>
+              <div>
+                <h3>不适用</h3>
+                <p>未进入 09:15 集合竞价窗口。</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="audit-list fade-in">
+            <div class="audit-item"><b>G0</b><span>11只均可定义；按主板10cm框架处理。</span></div>
+            <div class="audit-item"><b>时间过滤</b><span>通过；未使用 2026-06-02 09:08 后信息。</span></div>
+            <div class="audit-item"><b>K6 正交增量</b><span>通过；昊华能源来自商品/政策与板块层级反馈；视觉中国来自 AI内容数据与MiniMax映射。</span></div>
+            <div class="audit-item"><b>非占优过滤</b><span>通过；同主题煤炭只保留昊华能源，AI应用只保留视觉中国。</span></div>
+            <div class="audit-item"><b>数学一致性</b><span>通过；Final = round(min(RawScore, MarketCap, VetoCap, ShortBoardCap, DominanceCap))。</span></div>
+            <div class="audit-item"><b>输出清洁度</b><span>通过；仅为结构化研究结论，不含交易指令、仓位建议或收益承诺。</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="risk">
+      <div class="shell">
+        <div class="section-head fade-in">
+          <div>
+            <p class="section-kicker">B5. 风险与观察变量</p>
+            <h2>限制 5★ 的关键变量</h2>
+          </div>
+          <p class="section-note">风险不是剔除本身，但决定 Confidence 与星级上限。</p>
+        </div>
+
+        <div class="risk-grid">
+          <article class="risk-card fade-in">
+            <div class="badges"><span class="badge risk">高</span><span class="badge">昊华能源、视觉中国</span></div>
+            <h3>同主题池外高位分化</h3>
+            <p>池外核心若弱化，会压制池内首板接力。</p>
+          </article>
+          <article class="risk-card fade-in">
+            <div class="badges"><span class="badge warn">中</span><span class="badge">昊华能源</span></div>
+            <h3>昊华能源异动公告风险提示</h3>
+            <p>不构成 Fatal，但压低 K5 与 Confidence。</p>
+          </article>
+          <article class="risk-card fade-in">
+            <div class="badges"><span class="badge warn">中</span><span class="badge">视觉中国</span></div>
+            <h3>AI应用拥挤与替代</h3>
+            <p>天地在线、掌阅科技、软通动力等池外节点可能形成替代或抽血。</p>
+          </article>
+          <article class="risk-card fade-in">
+            <div class="badges"><span class="badge warn">中</span><span class="badge">全部候选</span></div>
+            <h3>关键结构字段缺失</h3>
+            <p>封单、开板次数、封板时间未完全审计，限制 5★。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="disclaimer">
+      <div class="shell">
+        <div class="disclaimer fade-in">
+          <h2>研究声明</h2>
+          <p>本协议仅用于公开信息下的结构化研究与概率推理，不构成任何投资建议、买卖指令、仓位建议或收益承诺。A 股短线接力博弈高度非线性，任何模型化判断都可能失效。本协议的作用在于提升研究过程中一致性、可审计性、时间因果纪律、供需识别、替代关系识别、增量确认与风险清理能力，并不保证任何候选在 T+1 收盘前锁定二板涨停。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <style>
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+  </style>
+
+  <script>
+    (() => {
+      const body = document.body;
+      const progress = document.getElementById("scrollProgress");
+      const navLinks = Array.from(document.querySelectorAll(".nav a"));
+      const sections = navLinks
+        .map((link) => document.querySelector(link.getAttribute("href")))
+        .filter(Boolean);
+
+      const updateProgress = () => {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = max > 0 ? (window.scrollY / max) * 100 : 0;
+        if (progress) progress.style.width = `${Math.min(100, Math.max(0, pct))}%`;
+      };
+
+      window.addEventListener("scroll", updateProgress, { passive: true });
+      updateProgress();
+
+      const sectionObserver = new IntersectionObserver((entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (!visible) return;
+        navLinks.forEach((link) => {
+          link.classList.toggle("active", link.getAttribute("href") === `#${visible.target.id}`);
+        });
+      }, { rootMargin: "-24% 0px -64% 0px", threshold: [0.12, 0.35, 0.6] });
+
+      sections.forEach((section) => sectionObserver.observe(section));
+
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+
+      document.querySelectorAll(".fade-in").forEach((el) => revealObserver.observe(el));
+
+      document.querySelectorAll("[data-view]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const mode = button.dataset.view;
+          body.classList.toggle("view-summary", mode === "summary");
+          body.classList.toggle("view-audit", mode === "audit");
+          document.querySelectorAll("[data-view]").forEach((item) => {
+            item.setAttribute("aria-pressed", String(item === button));
+          });
+        });
+      });
+
+      const rows = Array.from(document.querySelectorAll("#candidateRows tr"));
+      const tbody = document.getElementById("candidateRows");
+      const search = document.getElementById("candidateSearch");
+      const filter = document.getElementById("candidateFilter");
+      const sort = document.getElementById("candidateSort");
+      const count = document.getElementById("candidateCount");
+      const empty = document.getElementById("emptyCandidates");
+
+      const applyCandidateControls = () => {
+        const q = (search?.value || "").trim().toLowerCase();
+        const filterValue = filter?.value || "all";
+        const sortValue = sort?.value || "rank";
+
+        const sorted = rows.slice().sort((a, b) => {
+          if (sortValue === "final") return Number(b.dataset.final) - Number(a.dataset.final);
+          if (sortValue === "confidence") return Number(b.dataset.confidence) - Number(a.dataset.confidence);
+          return Number(a.dataset.rank) - Number(b.dataset.rank);
+        });
+
+        sorted.forEach((row) => tbody.appendChild(row));
+
+        let visible = 0;
+        rows.forEach((row) => {
+          const matchesQuery = !q || row.dataset.search.toLowerCase().includes(q);
+          const matchesFilter =
+            filterValue === "all" ||
+            row.dataset.status === filterValue ||
+            (filterValue === "major" && row.dataset.veto.toLowerCase() === "major");
+          const show = matchesQuery && matchesFilter;
+          row.hidden = !show;
+          if (show) visible += 1;
+        });
+
+        if (count) count.textContent = `${visible} 只候选`;
+        if (empty) empty.style.display = visible === 0 ? "block" : "none";
+      };
+
+      [search, filter, sort].forEach((control) => {
+        if (control) control.addEventListener("input", applyCandidateControls);
+      });
+      applyCandidateControls();
+
+      const copyButton = document.getElementById("copySummary");
+      if (copyButton) {
+        copyButton.addEventListener("click", async () => {
+          const text = "Top2：昊华能源（601101）Final 80 / Confidence 72 / 4★；视觉中国（000681）Final 79 / Confidence 70 / 4★。市场阶段：启动/扩散期；主攻方向：煤炭、AI 应用；EvidenceCutoff：2026-06-02 09:08。";
+          try {
+            await navigator.clipboard.writeText(text);
+            copyButton.textContent = "已复制";
+            window.setTimeout(() => { copyButton.textContent = "复制核心结论"; }, 1400);
+          } catch (error) {
+            copyButton.textContent = "复制失败";
+            window.setTimeout(() => { copyButton.textContent = "复制核心结论"; }, 1400);
+          }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
