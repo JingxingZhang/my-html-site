@@ -1,0 +1,1432 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>26-06-02 全景识别前置</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f8;
+      --paper: #ffffff;
+      --ink: #111318;
+      --muted: #656b76;
+      --soft: #eef1f3;
+      --line: #dfe4e8;
+      --line-strong: #c8d0d8;
+      --accent: #0f766e;
+      --accent-soft: #e6f4f1;
+      --warm: #b45309;
+      --warm-soft: #fff4e5;
+      --danger: #b42318;
+      --shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+      --radius: 8px;
+      --max: 1180px;
+      --focus: 0 0 0 3px rgba(15, 118, 110, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.65;
+      letter-spacing: 0;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .skip {
+      position: absolute;
+      left: -999px;
+      top: 10px;
+      z-index: 20;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .skip:focus {
+      left: 12px;
+    }
+
+    .shell {
+      min-height: 100vh;
+    }
+
+    .hero {
+      background: var(--paper);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-inner {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+      padding: 54px 0 26px;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 980px;
+      font-size: clamp(34px, 6vw, 62px);
+      line-height: 1.04;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 860px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .hero-meta li {
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fbfcfd;
+      color: #303640;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .hero-meta b {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .nav-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(223, 228, 232, 0.9);
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(16px);
+    }
+
+    .section-nav {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      min-height: 58px;
+      overflow-x: auto;
+    }
+
+    .section-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      min-width: max-content;
+    }
+
+    .section-links a,
+    .utility-button {
+      border: 1px solid transparent;
+      border-radius: 999px;
+      background: transparent;
+      color: #39404a;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 650;
+      line-height: 1;
+      padding: 10px 12px;
+      transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+      white-space: nowrap;
+    }
+
+    .section-links a:hover,
+    .utility-button:hover {
+      border-color: var(--line);
+      background: var(--soft);
+      color: var(--ink);
+    }
+
+    .section-links a:focus-visible,
+    .utility-button:focus-visible,
+    .chip:focus-visible,
+    .control input:focus-visible,
+    .control select:focus-visible,
+    .detail-toggle:focus-visible,
+    .back-top:focus-visible {
+      outline: none;
+      box-shadow: var(--focus);
+    }
+
+    main {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    section {
+      padding: 42px 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 18px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      max-width: 650px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric {
+      min-height: 138px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03);
+    }
+
+    .metric .label {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .metric .value {
+      margin: 9px 0 0;
+      font-size: 34px;
+      line-height: 1.05;
+      font-weight: 760;
+      letter-spacing: 0;
+    }
+
+    .metric .note {
+      margin: 11px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .metric strong {
+      color: var(--ink);
+    }
+
+    .distribution {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .dist-row {
+      display: grid;
+      grid-template-columns: 74px 1fr 34px;
+      align-items: center;
+      gap: 10px;
+      color: #303640;
+      font-size: 13px;
+    }
+
+    .bar {
+      height: 7px;
+      border-radius: 999px;
+      background: var(--soft);
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--accent);
+    }
+
+    .insight-band {
+      margin-top: 14px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfcfd;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+      gap: 18px;
+      align-items: center;
+    }
+
+    .insight-band h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .insight-band p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .time-node {
+      position: relative;
+      min-height: 76px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+
+    .time-node::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .time-node b {
+      display: block;
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    .time-node span {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      overflow: clip;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) minmax(160px, 220px) minmax(160px, 220px) auto;
+      gap: 10px;
+      align-items: end;
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfd;
+    }
+
+    .control label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .control input,
+    .control select {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--paper);
+      color: var(--ink);
+      padding: 9px 11px;
+      font-size: 14px;
+    }
+
+    .utility-button.solid {
+      min-height: 42px;
+      border-color: var(--ink);
+      border-radius: var(--radius);
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .utility-button.solid:hover {
+      background: #2a2e36;
+      color: #fff;
+    }
+
+    .filter-zone {
+      padding: 14px 16px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .filter-label {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      min-height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      color: #343b46;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 650;
+      line-height: 1;
+      padding: 8px 11px;
+      transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+    }
+
+    .chip[aria-pressed="true"] {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: #07544e;
+    }
+
+    .table-status {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      color: var(--muted);
+      font-size: 13px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1080px;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      padding: 14px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f9fafb;
+      color: #434a55;
+      font-size: 12px;
+      font-weight: 760;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      transition: background 150ms ease;
+    }
+
+    tbody tr:hover {
+      background: #fbfcfd;
+    }
+
+    .name-cell {
+      min-width: 150px;
+      font-weight: 760;
+      line-height: 1.3;
+    }
+
+    .name-cell span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .num-cell,
+    .time-cell,
+    .board-cell {
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .keyword-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-width: 180px;
+    }
+
+    .keyword-list span {
+      display: inline-flex;
+      min-height: 26px;
+      align-items: center;
+      border-radius: 999px;
+      background: var(--soft);
+      color: #303640;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    .reason-cell {
+      min-width: 430px;
+      max-width: 600px;
+      color: #2f3641;
+      font-size: 13px;
+      line-height: 1.62;
+    }
+
+    .reason-cell mark,
+    .detail-body mark {
+      border-radius: 3px;
+      background: var(--warm-soft);
+      color: #7c2d12;
+      padding: 0 2px;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .stock-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      overflow: clip;
+      box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03);
+    }
+
+    .stock-card[hidden],
+    tr[hidden] {
+      display: none !important;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfd;
+    }
+
+    .card-title h3 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .card-title p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .board-badge {
+      flex: 0 0 auto;
+      display: inline-flex;
+      min-height: 28px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      padding: 4px 9px;
+      color: #303640;
+      font-size: 12px;
+      font-weight: 760;
+      white-space: nowrap;
+    }
+
+    .board-badge.hot {
+      border-color: #f4cf9a;
+      background: var(--warm-soft);
+      color: var(--warm);
+    }
+
+    .card-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      background: var(--line);
+    }
+
+    .card-metrics div {
+      min-height: 70px;
+      padding: 12px;
+      background: var(--paper);
+    }
+
+    .card-metrics span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .card-metrics b {
+      display: block;
+      margin-top: 4px;
+      font-size: 17px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .card-keywords {
+      padding: 14px 16px 0;
+    }
+
+    .detail-body {
+      padding: 14px 16px 16px;
+      color: #303640;
+      font-size: 14px;
+      line-height: 1.72;
+    }
+
+    .detail-toggle {
+      display: none;
+      width: calc(100% - 32px);
+      min-height: 40px;
+      margin: 0 16px 16px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--paper);
+      color: #303640;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .group-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .group-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      padding: 18px;
+    }
+
+    .group-panel h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .group-panel ul {
+      margin: 12px 0 0;
+      padding-left: 18px;
+      color: #303640;
+    }
+
+    .group-panel li + li {
+      margin-top: 7px;
+    }
+
+    .keyword-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .keyword-cloud span {
+      display: inline-flex;
+      min-height: 30px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      color: #303640;
+      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .audit-box {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #111318;
+      color: #e8ecef;
+      overflow: clip;
+    }
+
+    .audit-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      color: #bfc6cf;
+      font-size: 13px;
+    }
+
+    pre {
+      margin: 0;
+      padding: 16px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .empty-state {
+      display: none;
+      padding: 34px 16px;
+      text-align: center;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+
+    .empty-state.is-visible {
+      display: block;
+    }
+
+    .back-top {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 12;
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--ink);
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .back-top.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .source-note {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 960px) {
+      .overview-grid,
+      .details-grid,
+      .group-grid,
+      .insight-band {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .toolbar .utility-button {
+        grid-column: 1 / -1;
+      }
+
+      .timeline {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .hero-inner,
+      main,
+      .section-nav {
+        width: min(100% - 24px, var(--max));
+      }
+
+      .hero-inner {
+        padding-top: 38px;
+      }
+
+      h1 {
+        font-size: 36px;
+      }
+
+      .lead {
+        font-size: 16px;
+      }
+
+      .section-head {
+        display: block;
+      }
+
+      .section-head p {
+        margin-top: 8px;
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .table-status {
+        display: block;
+      }
+
+      .table-status span {
+        display: block;
+      }
+
+      .timeline,
+      .card-metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .detail-body.is-collapsed {
+        max-height: 210px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .detail-body.is-collapsed::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 64px;
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #fff);
+      }
+
+      .detail-toggle {
+        display: block;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
+
+    @media print {
+      :root {
+        --bg: #fff;
+      }
+
+      body {
+        background: #fff;
+      }
+
+      .nav-wrap,
+      .toolbar,
+      .filter-zone,
+      .back-top,
+      .detail-toggle,
+      .utility-button {
+        display: none !important;
+      }
+
+      .hero-inner,
+      main {
+        width: 100%;
+      }
+
+      .hero-inner {
+        padding: 22px 0 14px;
+      }
+
+      section {
+        padding: 20px 0;
+        break-inside: avoid;
+      }
+
+      .panel,
+      .metric,
+      .stock-card,
+      .group-panel,
+      .audit-box {
+        box-shadow: none;
+      }
+
+      table {
+        min-width: 0;
+        font-size: 10px;
+      }
+
+      th {
+        position: static;
+      }
+
+      .reason-cell {
+        min-width: 0;
+        max-width: none;
+      }
+
+      .detail-body.is-collapsed {
+        max-height: none;
+        overflow: visible;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">跳到正文</a>
+  <div class="shell">
+    <header class="hero" id="top">
+      <div class="hero-inner">
+        <p class="eyebrow">2026-06-02 / 全景识别前置</p>
+        <h1>涨停标的全景看板</h1>
+        <p class="lead">基于原始 Markdown 表格生成的单文件数据页。页面只呈现源文件已给出的股票名称、代码、价格、成交金额、涨停时间、连板天数、关键词与涨停原因，不补充外部行情或公告信息。</p>
+        <ul class="hero-meta" aria-label="页面摘要">
+          <li><b>4</b> 个标的</li>
+          <li><b>14</b> 个关键词</li>
+          <li><b>09:31:59</b> 最早涨停</li>
+          <li><b>10:48:33</b> 最晚涨停</li>
+        </ul>
+      </div>
+    </header>
+
+    <nav class="nav-wrap" aria-label="页面导航">
+      <div class="section-nav">
+        <div class="section-links">
+          <a href="#overview">概览</a>
+          <a href="#table">主表格</a>
+          <a href="#details">详情</a>
+          <a href="#groups">分组</a>
+          <a href="#audit">原文</a>
+        </div>
+        <button class="utility-button" type="button" data-action="print" aria-label="打印页面">打印</button>
+      </div>
+    </nav>
+
+    <main id="main">
+      <section id="overview" aria-labelledby="overview-title">
+        <div class="section-head">
+          <div>
+            <h2 id="overview-title">概览</h2>
+          </div>
+          <p>摘要指标均从 Markdown 表格直接计算：标的数量、关键词拆分、连板分布、涨停时间范围和成交金额合计。</p>
+        </div>
+
+        <div class="overview-grid">
+          <article class="metric">
+            <p class="label">标的数量</p>
+            <p class="value">4</p>
+            <p class="note">原表共有 <strong>4</strong> 行股票数据。</p>
+          </article>
+          <article class="metric">
+            <p class="label">成交金额合计</p>
+            <p class="value">20.37亿</p>
+            <p class="note">按原表中“亿”为单位的数值相加。</p>
+          </article>
+          <article class="metric">
+            <p class="label">关键词数量</p>
+            <p class="value">14</p>
+            <p class="note">以加号分隔后去重统计。</p>
+          </article>
+          <article class="metric">
+            <p class="label">连板分布</p>
+            <div class="distribution" aria-label="连板分布">
+              <div class="dist-row"><span>首板</span><span class="bar"><span style="width:75%"></span></span><b>3</b></div>
+              <div class="dist-row"><span>7天6板</span><span class="bar"><span style="width:25%"></span></span><b>1</b></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="insight-band">
+          <div>
+            <h3>时间线扫描</h3>
+            <p>源表内最早最终涨停时间为香江控股 <strong>09:31:59</strong>，最晚为实益达 <strong>10:48:33</strong>。该模块只反映原始表格的时间顺序。</p>
+          </div>
+          <div class="timeline" aria-label="涨停时间线">
+            <div class="time-node"><b>09:31:59</b><span>香江控股 600162</span></div>
+            <div class="time-node"><b>09:42:53</b><span>华微电子 600360</span></div>
+            <div class="time-node"><b>10:22:33</b><span>南山控股 002314</span></div>
+            <div class="time-node"><b>10:48:33</b><span>实益达 002137</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="table" aria-labelledby="table-title">
+        <div class="section-head">
+          <div>
+            <h2 id="table-title">主表格</h2>
+          </div>
+          <p>支持搜索股票、代码、关键词和原因文本；可按连板、关键词筛选，并按时间、价格或成交金额排序。</p>
+        </div>
+
+        <div class="panel">
+          <div class="toolbar" role="search">
+            <div class="control">
+              <label for="searchInput">搜索</label>
+              <input id="searchInput" type="search" placeholder="输入股票、代码、关键词或原因内容" autocomplete="off">
+            </div>
+            <div class="control">
+              <label for="boardFilter">连板</label>
+              <select id="boardFilter">
+                <option value="all">全部连板</option>
+                <option value="首板">首板</option>
+                <option value="7天6板">7天6板</option>
+              </select>
+            </div>
+            <div class="control">
+              <label for="sortSelect">排序</label>
+              <select id="sortSelect">
+                <option value="time-asc">涨停时间从早到晚</option>
+                <option value="time-desc">涨停时间从晚到早</option>
+                <option value="amount-desc">成交金额从高到低</option>
+                <option value="price-desc">当前股价从高到低</option>
+                <option value="name-asc">股票名称 A-Z</option>
+              </select>
+            </div>
+            <button class="utility-button solid" type="button" data-action="copy">复制当前结果</button>
+          </div>
+
+          <div class="filter-zone" aria-label="关键词筛选">
+            <p class="filter-label">关键词筛选</p>
+            <div class="chips">
+              <button class="chip" type="button" data-keyword="all" aria-pressed="true">全部</button>
+              <button class="chip" type="button" data-keyword="先进封装" aria-pressed="false">先进封装</button>
+              <button class="chip" type="button" data-keyword="智能硬件" aria-pressed="false">智能硬件</button>
+              <button class="chip" type="button" data-keyword="间接投资宇树科技" aria-pressed="false">间接投资宇树科技</button>
+              <button class="chip" type="button" data-keyword="物流REITs扩募" aria-pressed="false">物流REITs扩募</button>
+              <button class="chip" type="button" data-keyword="仓储物流" aria-pressed="false">仓储物流</button>
+              <button class="chip" type="button" data-keyword="国企背景" aria-pressed="false">国企背景</button>
+              <button class="chip" type="button" data-keyword="广州地产项目" aria-pressed="false">广州地产项目</button>
+              <button class="chip" type="button" data-keyword="家居商贸" aria-pressed="false">家居商贸</button>
+              <button class="chip" type="button" data-keyword="养老服务" aria-pressed="false">养老服务</button>
+              <button class="chip" type="button" data-keyword="低价股" aria-pressed="false">低价股</button>
+              <button class="chip" type="button" data-keyword="功率半导体" aria-pressed="false">功率半导体</button>
+              <button class="chip" type="button" data-keyword="分红" aria-pressed="false">分红</button>
+              <button class="chip" type="button" data-keyword="摘帽" aria-pressed="false">摘帽</button>
+              <button class="chip" type="button" data-keyword="吉林国资" aria-pressed="false">吉林国资</button>
+            </div>
+          </div>
+
+          <div class="table-status" aria-live="polite">
+            <span id="resultCount">当前显示 4 / 4 条</span>
+            <span>移动端可横向滑动查看完整 7 字段。</span>
+          </div>
+
+          <div class="table-scroll">
+            <table id="stockTable">
+              <thead>
+                <tr>
+                  <th scope="col">股票名称及代码</th>
+                  <th scope="col">当前股价</th>
+                  <th scope="col">今日成交金额</th>
+                  <th scope="col">最终涨停时间</th>
+                  <th scope="col">连板天数</th>
+                  <th scope="col">涨停关键词</th>
+                  <th scope="col">涨停原因内容</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-name="实益达" data-code="002137" data-price="9.45" data-amount="4.31" data-time="38913" data-board="首板" data-keywords="先进封装+智能硬件+间接投资宇树科技">
+                  <td class="name-cell">实益达<span>002137</span></td>
+                  <td class="num-cell">9.45</td>
+                  <td class="num-cell">4.31亿</td>
+                  <td class="time-cell">10:48:33</td>
+                  <td class="board-cell">首板</td>
+                  <td><div class="keyword-list"><span>先进封装</span><span>智能硬件</span><span>间接投资宇树科技</span></div></td>
+                  <td class="reason-cell">1、据2026年5月19日互动易，公司智能硬件制造业务涉及半导体封装设备部件及整机产品，且已由半导体封装设备部件加工制造逐步拓展到整机加工组装并实现批量出货，公司旗下子公司为ASM PT提供半导体封装设备部件及整机产品。<br>2、据2026年4月21日年报，公司主营智能硬件制造及智能终端产品业务，进入了ASM PT、ABL、Signify等优质客户供应链，2025年营收同比增长14.13%，境内销售额同比增加52.98%。<br>3、据2024年12月27日异动公告，公司全资子公司持有浙江容腾创业投资合伙企业0.8333%股权，容腾持有宇树科技1.3217%股权，股权穿透后，公司仅持有宇树科技 0.011%股权。</td>
+                </tr>
+                <tr data-name="南山控股" data-code="002314" data-price="2.62" data-amount="2.56" data-time="37353" data-board="首板" data-keywords="物流REITs扩募+仓储物流+国企背景">
+                  <td class="name-cell">南山控股<span>002314</span></td>
+                  <td class="num-cell">2.62</td>
+                  <td class="num-cell">2.56亿</td>
+                  <td class="time-cell">10:22:33</td>
+                  <td class="board-cell">首板</td>
+                  <td><div class="keyword-list"><span>物流REITs扩募</span><span>仓储物流</span><span>国企背景</span></div></td>
+                  <td class="reason-cell">1、据2026年5月22日投资者关系活动记录表，华泰宝湾物流REIT拟扩募购入成都、西安、青岛、宁波的4个优质物流园区资产，目前扩募工作正在积极推进中；据2026年5月20日业绩说明会，扩募事宜正按计划推进。<br>2、据2025年年度报告，仓储物流是公司战略性主业，截至2025年末在全国拥有或管理86个智慧物流园区，运营及规划仓储面积逾990万平方米，仓库平均使用率达92.9%。<br>3、据公司2025年年报及互动易，公司的最终控制人为中国南山开发集团股份有限公司，属于国有企业。</td>
+                </tr>
+                <tr data-name="香江控股" data-code="600162" data-price="3.21" data-amount="5.6" data-time="34319" data-board="7天6板" data-keywords="广州地产项目+家居商贸+养老服务+低价股">
+                  <td class="name-cell">香江控股<span>600162</span></td>
+                  <td class="num-cell">3.21</td>
+                  <td class="num-cell">5.6亿</td>
+                  <td class="time-cell">09:31:59</td>
+                  <td class="board-cell">7天6板</td>
+                  <td><div class="keyword-list"><span>广州地产项目</span><span>家居商贸</span><span>养老服务</span><span>低价股</span></div></td>
+                  <td class="reason-cell">1、据2026年5月22日互动易，公司番禺锦江香江一号项目目前已正常接受预约看房及预售，该项目位于广州。<br>2、据2026年4月11日年报，公司以“家居商贸+城市发展”双核心业务布局，在全国多省市运营的商贸及家居综合体项目总面积近一百八十万平方米，与国内外逾6,000家知名品牌建立长期稳定的战略合作关系。<br>3、据2026年4月11日年报，公司子公司天津市锦绣年华养老服务有限公司及广州香江疗养院有限公司分别从事养老服务和医疗业务。<br>4、公司股价低于4元，属于低价股。</td>
+                </tr>
+                <tr data-name="华微电子" data-code="600360" data-price="12.77" data-amount="7.9" data-time="34973" data-board="首板" data-keywords="功率半导体+分红+摘帽+吉林国资">
+                  <td class="name-cell">华微电子<span>600360</span></td>
+                  <td class="num-cell">12.77</td>
+                  <td class="num-cell">7.9亿</td>
+                  <td class="time-cell">09:42:53</td>
+                  <td class="board-cell">首板</td>
+                  <td><div class="keyword-list"><span>功率半导体</span><span>分红</span><span>摘帽</span><span>吉林国资</span></div></td>
+                  <td class="reason-cell">1、据2026年6月2日公告，公司披露2025年年度权益分派实施公告，这是公司撤销退市风险警示后的首次分红。<br>2、据2026年4月21日年报，公司是集功率半导体器件设计研发、芯片加工、封装测试及产品营销为一体的IDM型国家级高新技术企业，拥有4至8英寸等多条晶圆生产线，芯片加工能力每年315万片，产品覆盖IGBT、MOS、IPM等全系列，可广泛应用于汽车电子、光伏储能及工业控制等领域。<br>3、据2026年5月21日机构调研，公司在省政府和市委市政府的大力支持下，吉林省国有资本运营集团战略并购华微电子，公司迈入国有资本相对控股的混合所有制发展新阶段；据2025年年报，公司实控人为吉林省国资委。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="tableEmpty" class="empty-state">没有匹配当前条件的标的。</div>
+        </div>
+      </section>
+
+      <section id="details" aria-labelledby="details-title">
+        <div class="section-head">
+          <div>
+            <h2 id="details-title">详情阅读</h2>
+          </div>
+          <p>每条原因内容完整保留。筛选条件会同步作用于详情卡片，便于在长文本中继续阅读。</p>
+        </div>
+
+        <div class="details-grid" id="detailGrid">
+          <article class="stock-card" data-name="实益达" data-code="002137" data-price="9.45" data-amount="4.31" data-time="38913" data-board="首板" data-keywords="先进封装+智能硬件+间接投资宇树科技">
+            <div class="card-head">
+              <div class="card-title">
+                <h3>实益达</h3>
+                <p>002137</p>
+              </div>
+              <span class="board-badge">首板</span>
+            </div>
+            <div class="card-metrics">
+              <div><span>当前股价</span><b>9.45</b></div>
+              <div><span>今日成交金额</span><b>4.31亿</b></div>
+              <div><span>最终涨停时间</span><b>10:48:33</b></div>
+            </div>
+            <div class="card-keywords"><div class="keyword-list"><span>先进封装</span><span>智能硬件</span><span>间接投资宇树科技</span></div></div>
+            <div class="detail-body is-collapsed">1、据2026年5月19日互动易，公司智能硬件制造业务涉及半导体封装设备部件及整机产品，且已由半导体封装设备部件加工制造逐步拓展到整机加工组装并实现批量出货，公司旗下子公司为ASM PT提供半导体封装设备部件及整机产品。<br>2、据2026年4月21日年报，公司主营智能硬件制造及智能终端产品业务，进入了ASM PT、ABL、Signify等优质客户供应链，2025年营收同比增长14.13%，境内销售额同比增加52.98%。<br>3、据2024年12月27日异动公告，公司全资子公司持有浙江容腾创业投资合伙企业0.8333%股权，容腾持有宇树科技1.3217%股权，股权穿透后，公司仅持有宇树科技 0.011%股权。</div>
+            <button class="detail-toggle" type="button" aria-expanded="false">展开完整原因</button>
+          </article>
+
+          <article class="stock-card" data-name="南山控股" data-code="002314" data-price="2.62" data-amount="2.56" data-time="37353" data-board="首板" data-keywords="物流REITs扩募+仓储物流+国企背景">
+            <div class="card-head">
+              <div class="card-title">
+                <h3>南山控股</h3>
+                <p>002314</p>
+              </div>
+              <span class="board-badge">首板</span>
+            </div>
+            <div class="card-metrics">
+              <div><span>当前股价</span><b>2.62</b></div>
+              <div><span>今日成交金额</span><b>2.56亿</b></div>
+              <div><span>最终涨停时间</span><b>10:22:33</b></div>
+            </div>
+            <div class="card-keywords"><div class="keyword-list"><span>物流REITs扩募</span><span>仓储物流</span><span>国企背景</span></div></div>
+            <div class="detail-body is-collapsed">1、据2026年5月22日投资者关系活动记录表，华泰宝湾物流REIT拟扩募购入成都、西安、青岛、宁波的4个优质物流园区资产，目前扩募工作正在积极推进中；据2026年5月20日业绩说明会，扩募事宜正按计划推进。<br>2、据2025年年度报告，仓储物流是公司战略性主业，截至2025年末在全国拥有或管理86个智慧物流园区，运营及规划仓储面积逾990万平方米，仓库平均使用率达92.9%。<br>3、据公司2025年年报及互动易，公司的最终控制人为中国南山开发集团股份有限公司，属于国有企业。</div>
+            <button class="detail-toggle" type="button" aria-expanded="false">展开完整原因</button>
+          </article>
+
+          <article class="stock-card" data-name="香江控股" data-code="600162" data-price="3.21" data-amount="5.6" data-time="34319" data-board="7天6板" data-keywords="广州地产项目+家居商贸+养老服务+低价股">
+            <div class="card-head">
+              <div class="card-title">
+                <h3>香江控股</h3>
+                <p>600162</p>
+              </div>
+              <span class="board-badge hot">7天6板</span>
+            </div>
+            <div class="card-metrics">
+              <div><span>当前股价</span><b>3.21</b></div>
+              <div><span>今日成交金额</span><b>5.6亿</b></div>
+              <div><span>最终涨停时间</span><b>09:31:59</b></div>
+            </div>
+            <div class="card-keywords"><div class="keyword-list"><span>广州地产项目</span><span>家居商贸</span><span>养老服务</span><span>低价股</span></div></div>
+            <div class="detail-body is-collapsed">1、据2026年5月22日互动易，公司番禺锦江香江一号项目目前已正常接受预约看房及预售，该项目位于广州。<br>2、据2026年4月11日年报，公司以“家居商贸+城市发展”双核心业务布局，在全国多省市运营的商贸及家居综合体项目总面积近一百八十万平方米，与国内外逾6,000家知名品牌建立长期稳定的战略合作关系。<br>3、据2026年4月11日年报，公司子公司天津市锦绣年华养老服务有限公司及广州香江疗养院有限公司分别从事养老服务和医疗业务。<br>4、公司股价低于4元，属于低价股。</div>
+            <button class="detail-toggle" type="button" aria-expanded="false">展开完整原因</button>
+          </article>
+
+          <article class="stock-card" data-name="华微电子" data-code="600360" data-price="12.77" data-amount="7.9" data-time="34973" data-board="首板" data-keywords="功率半导体+分红+摘帽+吉林国资">
+            <div class="card-head">
+              <div class="card-title">
+                <h3>华微电子</h3>
+                <p>600360</p>
+              </div>
+              <span class="board-badge">首板</span>
+            </div>
+            <div class="card-metrics">
+              <div><span>当前股价</span><b>12.77</b></div>
+              <div><span>今日成交金额</span><b>7.9亿</b></div>
+              <div><span>最终涨停时间</span><b>09:42:53</b></div>
+            </div>
+            <div class="card-keywords"><div class="keyword-list"><span>功率半导体</span><span>分红</span><span>摘帽</span><span>吉林国资</span></div></div>
+            <div class="detail-body is-collapsed">1、据2026年6月2日公告，公司披露2025年年度权益分派实施公告，这是公司撤销退市风险警示后的首次分红。<br>2、据2026年4月21日年报，公司是集功率半导体器件设计研发、芯片加工、封装测试及产品营销为一体的IDM型国家级高新技术企业，拥有4至8英寸等多条晶圆生产线，芯片加工能力每年315万片，产品覆盖IGBT、MOS、IPM等全系列，可广泛应用于汽车电子、光伏储能及工业控制等领域。<br>3、据2026年5月21日机构调研，公司在省政府和市委市政府的大力支持下，吉林省国有资本运营集团战略并购华微电子，公司迈入国有资本相对控股的混合所有制发展新阶段；据2025年年报，公司实控人为吉林省国资委。</div>
+            <button class="detail-toggle" type="button" aria-expanded="false">展开完整原因</button>
+          </article>
+        </div>
+        <div id="detailEmpty" class="empty-state">详情区没有匹配当前条件的标的。</div>
+      </section>
+
+      <section id="groups" aria-labelledby="groups-title">
+        <div class="section-head">
+          <div>
+            <h2 id="groups-title">结构化分组</h2>
+          </div>
+          <p>用于快速定位连板状态与题材关键词，分组内容完全来自原始字段。</p>
+        </div>
+
+        <div class="group-grid">
+          <article class="group-panel">
+            <h3>连板分组</h3>
+            <ul>
+              <li><strong>首板：</strong>实益达 002137、南山控股 002314、华微电子 600360</li>
+              <li><strong>7天6板：</strong>香江控股 600162</li>
+            </ul>
+          </article>
+          <article class="group-panel">
+            <h3>关键词云</h3>
+            <div class="keyword-cloud">
+              <span>先进封装</span><span>智能硬件</span><span>间接投资宇树科技</span><span>物流REITs扩募</span><span>仓储物流</span><span>国企背景</span><span>广州地产项目</span><span>家居商贸</span><span>养老服务</span><span>低价股</span><span>功率半导体</span><span>分红</span><span>摘帽</span><span>吉林国资</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="audit" aria-labelledby="audit-title">
+        <div class="section-head">
+          <div>
+            <h2 id="audit-title">原始 Markdown</h2>
+          </div>
+          <p>保留源文件表格，便于和页面结构化展示交叉核对。</p>
+        </div>
+        <div class="audit-box">
+          <div class="audit-head">
+            <span>C:\zzx\Codex\Trust only logic not tears\26-06-02\全景看板\26-06-02 全景识别前置.md</span>
+            <button class="utility-button" type="button" data-action="copy-raw">复制原文</button>
+          </div>
+          <pre id="rawMarkdown">| 股票名称及代码 | 当前股价 | 今日成交金额 | 最终涨停时间 | 连板天数 | 涨停关键词 | 涨停原因内容 |
+|---|---:|---:|---|---|---|---|
+| 实益达 002137 | 9.45 | 4.31亿 | 10:48:33 | 首板 | 先进封装+智能硬件+间接投资宇树科技 | 1、据2026年5月19日互动易，公司智能硬件制造业务涉及半导体封装设备部件及整机产品，且已由半导体封装设备部件加工制造逐步拓展到整机加工组装并实现批量出货，公司旗下子公司为ASM PT提供半导体封装设备部件及整机产品。&lt;br&gt;2、据2026年4月21日年报，公司主营智能硬件制造及智能终端产品业务，进入了ASM PT、ABL、Signify等优质客户供应链，2025年营收同比增长14.13%，境内销售额同比增加52.98%。&lt;br&gt;3、据2024年12月27日异动公告，公司全资子公司持有浙江容腾创业投资合伙企业0.8333%股权，容腾持有宇树科技1.3217%股权，股权穿透后，公司仅持有宇树科技 0.011%股权。 |
+| 南山控股 002314 | 2.62 | 2.56亿 | 10:22:33 | 首板 | 物流REITs扩募+仓储物流+国企背景 | 1、据2026年5月22日投资者关系活动记录表，华泰宝湾物流REIT拟扩募购入成都、西安、青岛、宁波的4个优质物流园区资产，目前扩募工作正在积极推进中；据2026年5月20日业绩说明会，扩募事宜正按计划推进。&lt;br&gt;2、据2025年年度报告，仓储物流是公司战略性主业，截至2025年末在全国拥有或管理86个智慧物流园区，运营及规划仓储面积逾990万平方米，仓库平均使用率达92.9%。&lt;br&gt;3、据公司2025年年报及互动易，公司的最终控制人为中国南山开发集团股份有限公司，属于国有企业。 |
+| 香江控股 600162 | 3.21 | 5.6亿 | 09:31:59 | 7天6板 | 广州地产项目+家居商贸+养老服务+低价股 | 1、据2026年5月22日互动易，公司番禺锦江香江一号项目目前已正常接受预约看房及预售，该项目位于广州。&lt;br&gt;2、据2026年4月11日年报，公司以“家居商贸+城市发展”双核心业务布局，在全国多省市运营的商贸及家居综合体项目总面积近一百八十万平方米，与国内外逾6,000家知名品牌建立长期稳定的战略合作关系。&lt;br&gt;3、据2026年4月11日年报，公司子公司天津市锦绣年华养老服务有限公司及广州香江疗养院有限公司分别从事养老服务和医疗业务。&lt;br&gt;4、公司股价低于4元，属于低价股。 |
+| 华微电子 600360 | 12.77 | 7.9亿 | 09:42:53 | 首板 | 功率半导体+分红+摘帽+吉林国资 | 1、据2026年6月2日公告，公司披露2025年年度权益分派实施公告，这是公司撤销退市风险警示后的首次分红。&lt;br&gt;2、据2026年4月21日年报，公司是集功率半导体器件设计研发、芯片加工、封装测试及产品营销为一体的IDM型国家级高新技术企业，拥有4至8英寸等多条晶圆生产线，芯片加工能力每年315万片，产品覆盖IGBT、MOS、IPM等全系列，可广泛应用于汽车电子、光伏储能及工业控制等领域。&lt;br&gt;3、据2026年5月21日机构调研，公司在省政府和市委市政府的大力支持下，吉林省国有资本运营集团战略并购华微电子，公司迈入国有资本相对控股的混合所有制发展新阶段；据2025年年报，公司实控人为吉林省国资委。 |</pre>
+        </div>
+        <p class="source-note">本页为离线单文件 HTML；未使用外部 CDN、远程字体、远程图片或联网数据。</p>
+      </section>
+    </main>
+  </div>
+
+  <button class="back-top" type="button" aria-label="返回顶部">↑</button>
+
+  <script>
+    (() => {
+      const table = document.querySelector("#stockTable");
+      const tbody = table?.querySelector("tbody");
+      const rows = tbody ? Array.from(tbody.querySelectorAll("tr")) : [];
+      const detailGrid = document.querySelector("#detailGrid");
+      const cards = detailGrid ? Array.from(detailGrid.querySelectorAll(".stock-card")) : [];
+      const searchInput = document.querySelector("#searchInput");
+      const boardFilter = document.querySelector("#boardFilter");
+      const sortSelect = document.querySelector("#sortSelect");
+      const chips = Array.from(document.querySelectorAll(".chip"));
+      const resultCount = document.querySelector("#resultCount");
+      const tableEmpty = document.querySelector("#tableEmpty");
+      const detailEmpty = document.querySelector("#detailEmpty");
+      const backTop = document.querySelector(".back-top");
+      let activeKeyword = "all";
+
+      const normalize = (value) => String(value || "").trim().toLowerCase();
+      const rowText = (element) => normalize(element.textContent);
+      const getTime = (element) => Number(element.dataset.time || 0);
+      const getAmount = (element) => Number(element.dataset.amount || 0);
+      const getPrice = (element) => Number(element.dataset.price || 0);
+      const getName = (element) => String(element.dataset.name || "");
+
+      function matches(element) {
+        const query = normalize(searchInput?.value);
+        const board = boardFilter?.value || "all";
+        const keywords = element.dataset.keywords || "";
+        const queryMatch = !query || rowText(element).includes(query);
+        const boardMatch = board === "all" || element.dataset.board === board;
+        const keywordMatch = activeKeyword === "all" || keywords.includes(activeKeyword);
+        return queryMatch && boardMatch && keywordMatch;
+      }
+
+      function sortItems(items) {
+        const mode = sortSelect?.value || "time-asc";
+        const sorted = [...items];
+        sorted.sort((a, b) => {
+          if (mode === "time-desc") return getTime(b) - getTime(a);
+          if (mode === "amount-desc") return getAmount(b) - getAmount(a);
+          if (mode === "price-desc") return getPrice(b) - getPrice(a);
+          if (mode === "name-asc") return getName(a).localeCompare(getName(b), "zh-Hans-CN");
+          return getTime(a) - getTime(b);
+        });
+        return sorted;
+      }
+
+      function highlight(text) {
+        const query = searchInput?.value.trim();
+        if (!query) return;
+        const safeQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const pattern = new RegExp(safeQuery, "gi");
+        document.querySelectorAll(".reason-cell, .detail-body").forEach((node) => {
+          if (!node.dataset.originalHtml) node.dataset.originalHtml = node.innerHTML;
+          node.innerHTML = node.dataset.originalHtml.replace(pattern, (match) => `<mark>${match}</mark>`);
+        });
+      }
+
+      function clearHighlight() {
+        document.querySelectorAll(".reason-cell, .detail-body").forEach((node) => {
+          if (node.dataset.originalHtml) node.innerHTML = node.dataset.originalHtml;
+        });
+      }
+
+      function updateView() {
+        clearHighlight();
+        const visibleRows = sortItems(rows).filter(matches);
+        const visibleCards = sortItems(cards).filter(matches);
+
+        sortItems(rows).forEach((row) => {
+          tbody?.appendChild(row);
+          row.hidden = !visibleRows.includes(row);
+        });
+
+        sortItems(cards).forEach((card) => {
+          detailGrid?.appendChild(card);
+          card.hidden = !visibleCards.includes(card);
+        });
+
+        if (resultCount) resultCount.textContent = `当前显示 ${visibleRows.length} / ${rows.length} 条`;
+        tableEmpty?.classList.toggle("is-visible", visibleRows.length === 0);
+        detailEmpty?.classList.toggle("is-visible", visibleCards.length === 0);
+        highlight();
+      }
+
+      searchInput?.addEventListener("input", updateView);
+      boardFilter?.addEventListener("change", updateView);
+      sortSelect?.addEventListener("change", updateView);
+
+      chips.forEach((chip) => {
+        chip.addEventListener("click", () => {
+          activeKeyword = chip.dataset.keyword || "all";
+          chips.forEach((item) => item.setAttribute("aria-pressed", String(item === chip)));
+          updateView();
+        });
+      });
+
+      document.querySelectorAll(".detail-toggle").forEach((button) => {
+        button.addEventListener("click", () => {
+          const body = button.previousElementSibling;
+          const expanded = button.getAttribute("aria-expanded") === "true";
+          button.setAttribute("aria-expanded", String(!expanded));
+          button.textContent = expanded ? "展开完整原因" : "收起原因";
+          body?.classList.toggle("is-collapsed", expanded);
+        });
+      });
+
+      async function copyText(text, button) {
+        try {
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(text);
+          } else {
+            const area = document.createElement("textarea");
+            area.value = text;
+            area.setAttribute("readonly", "");
+            area.style.position = "fixed";
+            area.style.left = "-9999px";
+            document.body.appendChild(area);
+            area.select();
+            document.execCommand("copy");
+            area.remove();
+          }
+          if (button) {
+            const original = button.textContent;
+            button.textContent = "已复制";
+            window.setTimeout(() => { button.textContent = original; }, 1400);
+          }
+        } catch (error) {
+          if (button) button.textContent = "复制失败";
+        }
+      }
+
+      document.querySelector("[data-action='copy']")?.addEventListener("click", (event) => {
+        const visibleRows = rows.filter((row) => !row.hidden);
+        const header = "股票名称及代码\t当前股价\t今日成交金额\t最终涨停时间\t连板天数\t涨停关键词\t涨停原因内容";
+        const lines = visibleRows.map((row) => Array.from(row.cells).map((cell) => cell.innerText.replace(/\s+/g, " ").trim()).join("\t"));
+        copyText([header, ...lines].join("\n"), event.currentTarget);
+      });
+
+      document.querySelector("[data-action='copy-raw']")?.addEventListener("click", (event) => {
+        copyText(document.querySelector("#rawMarkdown")?.innerText || "", event.currentTarget);
+      });
+
+      document.querySelector("[data-action='print']")?.addEventListener("click", () => {
+        window.print();
+      });
+
+      window.addEventListener("scroll", () => {
+        backTop?.classList.toggle("is-visible", window.scrollY > 520);
+      }, { passive: true });
+
+      backTop?.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      updateView();
+    })();
+  </script>
+</body>
+</html>
