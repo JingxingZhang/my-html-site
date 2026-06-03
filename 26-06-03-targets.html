@@ -1,0 +1,1612 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>全景识别 · 2026-06-03</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f5f7;
+      --panel: #ffffff;
+      --text: #1d1d1f;
+      --muted: #6e6e73;
+      --line: #d8d8de;
+      --line-soft: #ececf1;
+      --accent: #0a84ff;
+      --accent-soft: #e8f2ff;
+      --green: #248a3d;
+      --amber: #b56a00;
+      --shadow: 0 18px 60px rgba(0, 0, 0, 0.08);
+      --radius: 8px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      letter-spacing: 0;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(216, 216, 222, 0.8);
+      background: rgba(245, 245, 247, 0.86);
+      backdrop-filter: saturate(180%) blur(18px);
+    }
+
+    .nav {
+      width: min(1240px, calc(100vw - 32px));
+      margin: 0 auto;
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand strong {
+      font-size: 15px;
+      white-space: nowrap;
+    }
+
+    .brand span {
+      color: var(--muted);
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .hero {
+      width: min(1240px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 64px 0 28px;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 920px;
+      font-size: clamp(40px, 7vw, 76px);
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    .hero-copy {
+      margin: 20px 0 0;
+      max-width: 780px;
+      color: var(--muted);
+      font-size: clamp(17px, 2vw, 22px);
+      line-height: 1.55;
+    }
+
+    .hero-meta {
+      margin-top: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: #3f3f46;
+      font-size: 13px;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: 8px 12px;
+    }
+
+    main {
+      width: min(1240px, calc(100vw - 32px));
+      margin: 0 auto 72px;
+    }
+
+    section {
+      margin-top: 26px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin: 0 0 14px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(24px, 3vw, 36px);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric {
+      min-height: 128px;
+      background: var(--panel);
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .metric label {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 10px;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 12px;
+      color: #515154;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .analytics {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 12px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .panel h3 {
+      margin: 0 0 16px;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+
+    .bar-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: minmax(112px, 150px) 1fr auto;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+    }
+
+    .bar-label {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .bar-track {
+      height: 8px;
+      border-radius: 999px;
+      background: #e9e9ef;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      min-width: 3px;
+      border-radius: inherit;
+      background: var(--accent);
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 55px;
+      z-index: 15;
+      margin-top: 28px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: saturate(180%) blur(18px);
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) auto auto auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .search {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0 12px;
+      background: #f8f8fb;
+    }
+
+    .search span {
+      color: var(--muted);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .search input {
+      width: 100%;
+      min-width: 0;
+      height: 38px;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+    }
+
+    .segmented {
+      display: flex;
+      gap: 6px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #f8f8fb;
+    }
+
+    .segmented-button,
+    .ghost-button,
+    .copy-button,
+    .chip {
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+    }
+
+    .segmented-button {
+      height: 30px;
+      border-radius: 999px;
+      padding: 0 12px;
+      background: transparent;
+      color: #404046;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .segmented-button span,
+    .chip span {
+      margin-left: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .segmented-button.active,
+    .chip.active {
+      border-color: #b8d8ff;
+      background: var(--accent-soft);
+      color: #0057b8;
+    }
+
+    .copy-button,
+    .ghost-button {
+      height: 38px;
+      border-radius: 999px;
+      padding: 0 14px;
+      background: #1d1d1f;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .ghost-button {
+      border-color: var(--line);
+      background: #fff;
+      color: var(--text);
+    }
+
+    .keyword-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .chip {
+      min-height: 32px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #fff;
+      border-color: var(--line-soft);
+      color: #3a3a40;
+      font-size: 13px;
+    }
+
+    .result-line {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: var(--panel);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1180px;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 14px 12px;
+      border-bottom: 1px solid var(--line-soft);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #fbfbfd;
+      color: #52525a;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    th.sortable {
+      cursor: pointer;
+    }
+
+    th.sortable::after {
+      content: "↕";
+      margin-left: 6px;
+      color: #9a9aa1;
+      font-size: 11px;
+    }
+
+    tbody tr:hover {
+      background: #fafcff;
+    }
+
+    .stock-name {
+      display: block;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .stock-code {
+      display: inline-block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .keyword-cell {
+      max-width: 220px;
+      line-height: 1.55;
+    }
+
+    .reason-col {
+      width: 420px;
+      min-width: 360px;
+      line-height: 1.62;
+    }
+
+    details summary {
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .table-reason {
+      margin-top: 10px;
+      color: #313136;
+    }
+
+    .table-reason p,
+    .reason-body p {
+      margin: 0 0 10px;
+    }
+
+    .mobile-list {
+      display: none;
+      gap: 12px;
+    }
+
+    .mobile-card,
+    .detail-card {
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: var(--panel);
+      padding: 18px;
+    }
+
+    .mobile-card h3,
+    .detail-card h3 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .meta-grid div {
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      padding: 10px;
+      background: #fbfbfd;
+    }
+
+    .meta-grid label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .meta-grid strong {
+      display: block;
+      margin-top: 5px;
+      font-size: 15px;
+      word-break: break-word;
+    }
+
+    .detail-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .detail-card {
+      scroll-margin-top: 124px;
+    }
+
+    .detail-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .detail-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .detail-tags span {
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #0057b8;
+      padding: 5px 8px;
+      font-size: 12px;
+    }
+
+    .reason-body {
+      margin-top: 14px;
+      line-height: 1.72;
+      color: #303036;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 10px;
+    }
+
+    .timeline-item {
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      background: var(--panel);
+      padding: 12px 12px 12px 14px;
+      min-height: 92px;
+    }
+
+    .timeline-item time {
+      color: var(--accent);
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timeline-item strong {
+      display: block;
+      margin-top: 7px;
+      font-size: 15px;
+    }
+
+    .timeline-item span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .raw-box {
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: var(--panel);
+      padding: 18px;
+    }
+
+    .raw-box pre {
+      overflow-x: auto;
+      white-space: pre-wrap;
+      line-height: 1.65;
+      color: #303036;
+      font-size: 13px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 50;
+      max-width: min(360px, calc(100vw - 36px));
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      background: #1d1d1f;
+      color: #fff;
+      font-size: 13px;
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .back-top {
+      position: fixed;
+      right: 18px;
+      bottom: 72px;
+      z-index: 40;
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 940px) {
+      .overview-grid,
+      .analytics {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr;
+        top: 54px;
+      }
+
+      .segmented {
+        overflow-x: auto;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .nav {
+        width: min(100vw - 24px, 1240px);
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        width: min(100vw - 24px, 1240px);
+        padding-top: 42px;
+      }
+
+      main {
+        width: min(100vw - 24px, 1240px);
+      }
+
+      h1 {
+        font-size: clamp(38px, 11vw, 56px);
+      }
+
+      .overview-grid,
+      .analytics {
+        grid-template-columns: 1fr;
+      }
+
+      .table-wrap {
+        display: none;
+      }
+
+      .mobile-list {
+        display: grid;
+      }
+
+      .section-head {
+        display: block;
+      }
+
+      .meta-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .bar-row {
+        grid-template-columns: 92px 1fr auto;
+      }
+    }
+
+    @media (max-width: 440px) {
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        margin-left: -4px;
+        margin-right: -4px;
+      }
+
+      .copy-button,
+      .ghost-button {
+        width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .site-header,
+      .toolbar,
+      .keyword-cloud,
+      .back-top,
+      .toast {
+        display: none !important;
+      }
+
+      .hero,
+      main {
+        width: 100%;
+      }
+
+      .table-wrap {
+        display: block;
+        overflow: visible;
+      }
+
+      table {
+        min-width: 0;
+        font-size: 10px;
+      }
+
+      .mobile-list {
+        display: none;
+      }
+
+      .detail-card,
+      .metric,
+      .panel {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav" aria-label="页面导航">
+      <a class="brand" href="#top"><strong>全景识别</strong><span>26-06-03 全景识别前置.md</span></a>
+      <div class="nav-links">
+        <a href="#overview">概览</a>
+        <a href="#data">数据</a>
+        <a href="#details">详情</a>
+        <a href="#source">原文</a>
+      </div>
+    </nav>
+  </header>
+
+  <div id="top" class="hero">
+    <p class="eyebrow">A-share Limit-up Panorama</p>
+    <h1>首板涨停标的全景识别</h1>
+    <p class="hero-copy">基于 Markdown 原文生成的单文件数据页，保留股票名称、代码、价格、成交金额、涨停时间、连板天数、关键词和原因全文。</p>
+    <div class="hero-meta" aria-label="来源信息">
+      <span class="pill">来源时间：2026-06-03 16:19:23</span>
+      <span class="pill">生成时间：2026-06-03 16:19:23</span>
+      <span class="pill">标的数量：8</span>
+      <span class="pill">连板分布：首板 8</span>
+    </div>
+  </div>
+
+  <main>
+    <section id="overview">
+      <div class="overview-grid">
+        <article class="metric">
+          <label>标的总数</label>
+          <strong>8</strong>
+          <span>全部来自原始 Markdown 表格行。</span>
+        </article>
+        <article class="metric">
+          <label>今日成交金额合计</label>
+          <strong>106.80亿</strong>
+          <span>按表格中的“亿/万”单位折算汇总。</span>
+        </article>
+        <article class="metric">
+          <label>关键词数量</label>
+          <strong>23</strong>
+          <span>按“+”拆分，保留原文关键词。</span>
+        </article>
+        <article class="metric">
+          <label>涨停时间区间</label>
+          <strong>09:49:15</strong>
+          <span>最早：豫能控股 09:49:15<br>最晚：西昌电力 13:56:05</span>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="structure-title">
+      <div class="section-head">
+        <div>
+          <h2 id="structure-title">结构视图</h2>
+          <p>按成交金额、连板天数和封板时间展示原文数据的分布。</p>
+        </div>
+      </div>
+      <div class="analytics">
+        <article class="panel">
+          <h3>成交金额 Top 8</h3>
+          <div class="bar-list"><div class="bar-row"><span class="bar-label" title="豫能控股 001896">豫能控股 001896</span><span class="bar-track"><span class="bar-fill" style="width:100.00%"></span></span><strong>31.92亿</strong></div>
+<div class="bar-row"><span class="bar-label" title="京能电力 600578">京能电力 600578</span><span class="bar-track"><span class="bar-fill" style="width:94.14%"></span></span><strong>30.05亿</strong></div>
+<div class="bar-row"><span class="bar-label" title="东方锆业 002167">东方锆业 002167</span><span class="bar-track"><span class="bar-fill" style="width:35.31%"></span></span><strong>11.27亿</strong></div>
+<div class="bar-row"><span class="bar-label" title="青山纸业 600103">青山纸业 600103</span><span class="bar-track"><span class="bar-fill" style="width:34.90%"></span></span><strong>11.14亿</strong></div>
+<div class="bar-row"><span class="bar-label" title="王子新材 002735">王子新材 002735</span><span class="bar-track"><span class="bar-fill" style="width:26.16%"></span></span><strong>8.35亿</strong></div>
+<div class="bar-row"><span class="bar-label" title="湘潭电化 002125">湘潭电化 002125</span><span class="bar-track"><span class="bar-fill" style="width:24.03%"></span></span><strong>7.67亿</strong></div>
+<div class="bar-row"><span class="bar-label" title="西昌电力 600505">西昌电力 600505</span><span class="bar-track"><span class="bar-fill" style="width:15.35%"></span></span><strong>4.9亿</strong></div>
+<div class="bar-row"><span class="bar-label" title="瑞贝卡 600439">瑞贝卡 600439</span><span class="bar-track"><span class="bar-fill" style="width:4.70%"></span></span><strong>1.5亿</strong></div></div>
+        </article>
+        <article class="panel">
+          <h3>连板分布</h3>
+          <div class="bar-list"><div class="bar-row"><span class="bar-label">首板</span><span class="bar-track"><span class="bar-fill" style="width:100.00%"></span></span><strong>8</strong></div></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="data" aria-labelledby="data-title">
+      <div class="section-head">
+        <div>
+          <h2 id="data-title">主数据表</h2>
+          <p class="result-line"><span id="visibleCount">8</span> / 8 行匹配当前条件</p>
+        </div>
+      </div>
+
+      <div class="toolbar" aria-label="筛选工具">
+        <label class="search" for="searchInput">
+          <span aria-hidden="true">⌕</span>
+          <span class="sr-only">搜索股票、代码、关键词、原因文本</span>
+          <input id="searchInput" type="search" aria-label="搜索股票、代码、关键词、原因文本" placeholder="搜索股票、代码、关键词、原因文本" autocomplete="off">
+        </label>
+        <div class="segmented" aria-label="连板筛选">
+          <button class="segmented-button active" type="button" data-board="all">全部<span>8</span></button>
+          <button class="segmented-button" type="button" data-board="首板">首板<span>8</span></button>
+        </div>
+        <button id="copyVisible" class="copy-button" type="button">复制当前数据</button>
+        <button id="resetFilters" class="ghost-button" type="button">重置</button>
+      </div>
+
+      <div class="keyword-cloud" aria-label="关键词筛选">
+        <button class="chip active" type="button" data-keyword="all">全部关键词<span>23</span></button>
+        <button class="chip" type="button" data-keyword="固态电池">固态电池<span>2</span></button>
+<button class="chip" type="button" data-keyword="火电">火电<span>2</span></button>
+<button class="chip" type="button" data-keyword="业绩减亏">业绩减亏<span>1</span></button>
+<button class="chip" type="button" data-keyword="业绩增长">业绩增长<span>1</span></button>
+<button class="chip" type="button" data-keyword="光模块">光模块<span>1</span></button>
+<button class="chip" type="button" data-keyword="北京国资">北京国资<span>1</span></button>
+<button class="chip" type="button" data-keyword="参股算力">参股算力<span>1</span></button>
+<button class="chip" type="button" data-keyword="发制品">发制品<span>1</span></button>
+<button class="chip" type="button" data-keyword="可控核聚变">可控核聚变<span>1</span></button>
+<button class="chip" type="button" data-keyword="央企">央企<span>1</span></button>
+<button class="chip" type="button" data-keyword="定增通过">定增通过<span>1</span></button>
+<button class="chip" type="button" data-keyword="富士康概念">富士康概念<span>1</span></button>
+<button class="chip" type="button" data-keyword="林浆纸">林浆纸<span>1</span></button>
+<button class="chip" type="button" data-keyword="河南国资">河南国资<span>1</span></button>
+<button class="chip" type="button" data-keyword="湘潭国资">湘潭国资<span>1</span></button>
+<button class="chip" type="button" data-keyword="电解二氧化锰">电解二氧化锰<span>1</span></button>
+<button class="chip" type="button" data-keyword="福建国资">福建国资<span>1</span></button>
+<button class="chip" type="button" data-keyword="绿色电力">绿色电力<span>1</span></button>
+<button class="chip" type="button" data-keyword="薄膜电容">薄膜电容<span>1</span></button>
+<button class="chip" type="button" data-keyword="跨境电商">跨境电商<span>1</span></button>
+<button class="chip" type="button" data-keyword="锆产品">锆产品<span>1</span></button>
+<button class="chip" type="button" data-keyword="锰酸锂">锰酸锂<span>1</span></button>
+<button class="chip" type="button" data-keyword="风光火储一体化">风光火储一体化<span>1</span></button>
+      </div>
+
+      <div class="table-wrap" role="region" aria-label="涨停股票数据表" tabindex="0">
+        <table>
+          <thead>
+            <tr>
+              <th class="sortable" data-sort="name">股票名称及代码</th>
+              <th class="sortable" data-sort="price">当前股价</th>
+              <th class="sortable" data-sort="amount">今日成交金额</th>
+              <th class="sortable" data-sort="time">最终涨停时间</th>
+              <th class="sortable" data-sort="board">连板天数</th>
+              <th data-sort="keywords">涨停关键词</th>
+              <th>涨停原因内容</th>
+            </tr>
+          </thead>
+          <tbody id="stockTableBody">
+            
+            <tr class="stock-row"
+              data-code="001896"
+              data-name="豫能控股"
+              data-price="20.08"
+              data-amount="31.92"
+              data-time="35355"
+              data-board="首板"
+              data-keywords="参股算力|火电|河南国资"
+              data-search="豫能控股 001896 20.08 31.92亿 09:49:15 首板 参股算力+火电+河南国资 1、据2026年6月1日每日经济新闻，全国首个绿色算力全栈AI平台正式上线运行；据2026年6月1日财闻，电力板块走强缘于高温推进用电负荷、数据中心用电刚性扩张；据2026年3月21日公告，公司拟增资11亿元参股优天算力，持有其42.29%股权，间接参股从事超大规模数据中心业务的郑州合盈。&lt;br&gt;2、据2025年年度报告，公司是河南省集火力发电、新能源、抽水蓄能等于一体的省级资本控股综合能源上市公司，控股火电总装机7,660MW，600MW级高效机组占比超八成。&lt;br&gt;3、据2025年年度报告，公司控股股东为河南投资集团有限公司，实际控制人为河南省财政厅。">
+              <td>
+                <a href="#detail-001896" class="stock-name">豫能控股</a>
+                <span class="stock-code">001896</span>
+              </td>
+              <td>20.08</td>
+              <td>31.92亿</td>
+              <td>09:49:15</td>
+              <td>首板</td>
+              <td class="keyword-cell">参股算力+火电+河南国资</td>
+              <td class="reason-col">
+                <details>
+                  <summary>展开完整原因</summary>
+                  <div class="table-reason"><p>1、据2026年6月1日每日经济新闻，全国首个绿色算力全栈AI平台正式上线运行；据2026年6月1日财闻，电力板块走强缘于高温推进用电负荷、数据中心用电刚性扩张；据2026年3月21日公告，公司拟增资11亿元参股优天算力，持有其42.29%股权，间接参股从事超大规模数据中心业务的郑州合盈。</p><p>2、据2025年年度报告，公司是河南省集火力发电、新能源、抽水蓄能等于一体的省级资本控股综合能源上市公司，控股火电总装机7,660MW，600MW级高效机组占比超八成。</p><p>3、据2025年年度报告，公司控股股东为河南投资集团有限公司，实际控制人为河南省财政厅。</p></div>
+                </details>
+              </td>
+            </tr>
+
+            <tr class="stock-row"
+              data-code="002125"
+              data-name="湘潭电化"
+              data-price="16.65"
+              data-amount="7.67"
+              data-time="36237"
+              data-board="首板"
+              data-keywords="固态电池|锰酸锂|电解二氧化锰|湘潭国资"
+              data-search="湘潭电化 002125 16.65 7.67亿 10:03:57 首板 固态电池+锰酸锂+电解二氧化锰+湘潭国资 1、据2026年5月18日业绩说明会，公司控股子公司广西立劲新材料有限公司正与部分固态电池企业就锰酸锂应用于半固态/固态电池领域开展合作研发，已取得一定进展，预计在2026年底或2027年初有所突破。&lt;br&gt;2、据2025年年报，公司锰酸锂年产能4万吨，市场占有率居行业前列；电解二氧化锰为“国家制造业单项冠军产品”，市场占有率保持行业领先。&lt;br&gt;3、据2025年年度报告，公司实际控制人为湘潭市人民政府国有资产监督管理委员会。">
+              <td>
+                <a href="#detail-002125" class="stock-name">湘潭电化</a>
+                <span class="stock-code">002125</span>
+              </td>
+              <td>16.65</td>
+              <td>7.67亿</td>
+              <td>10:03:57</td>
+              <td>首板</td>
+              <td class="keyword-cell">固态电池+锰酸锂+电解二氧化锰+湘潭国资</td>
+              <td class="reason-col">
+                <details>
+                  <summary>展开完整原因</summary>
+                  <div class="table-reason"><p>1、据2026年5月18日业绩说明会，公司控股子公司广西立劲新材料有限公司正与部分固态电池企业就锰酸锂应用于半固态/固态电池领域开展合作研发，已取得一定进展，预计在2026年底或2027年初有所突破。</p><p>2、据2025年年报，公司锰酸锂年产能4万吨，市场占有率居行业前列；电解二氧化锰为“国家制造业单项冠军产品”，市场占有率保持行业领先。</p><p>3、据2025年年度报告，公司实际控制人为湘潭市人民政府国有资产监督管理委员会。</p></div>
+                </details>
+              </td>
+            </tr>
+
+            <tr class="stock-row"
+              data-code="002167"
+              data-name="东方锆业"
+              data-price="14.73"
+              data-amount="11.27"
+              data-time="38436"
+              data-board="首板"
+              data-keywords="定增通过|固态电池|锆产品"
+              data-search="东方锆业 002167 14.73 11.27亿 10:40:36 首板 定增通过+固态电池+锆产品 1、据2026年6月2日公司公告，公司2026年第二次临时股东会审议通过了关于向特定对象发行A股股票预案的议案，拟募集资金11.70亿元用于电熔氧化锆及新能源电池级高纯复合氧化锆等项目。&lt;br&gt;2、据2026年4月21日年报及2026年4月27日业绩说明会，公司氧化锆粉末已作为添加剂应用于三元正极材料并供货头部电池企业；公司通过参股合肥固宁纪元及推进电池级高纯复合氧化锆产线建设，双重布局固态电池核心材料，相关氧化锆样品已获部分固态电池材料厂家研发试用初步认可。&lt;br&gt;3、据2026年4月21日年报，公司是国内锆行业技术领先、产业链完整的高新技术企业，产品涵盖氯氧化锆、二氧化锆、复合氧化锆、氧化锆陶瓷结构件等六大系列百余品种，已构建从锆英砂原料到高端锆制品深加工的垂直一体化全产业链。">
+              <td>
+                <a href="#detail-002167" class="stock-name">东方锆业</a>
+                <span class="stock-code">002167</span>
+              </td>
+              <td>14.73</td>
+              <td>11.27亿</td>
+              <td>10:40:36</td>
+              <td>首板</td>
+              <td class="keyword-cell">定增通过+固态电池+锆产品</td>
+              <td class="reason-col">
+                <details>
+                  <summary>展开完整原因</summary>
+                  <div class="table-reason"><p>1、据2026年6月2日公司公告，公司2026年第二次临时股东会审议通过了关于向特定对象发行A股股票预案的议案，拟募集资金11.70亿元用于电熔氧化锆及新能源电池级高纯复合氧化锆等项目。</p><p>2、据2026年4月21日年报及2026年4月27日业绩说明会，公司氧化锆粉末已作为添加剂应用于三元正极材料并供货头部电池企业；公司通过参股合肥固宁纪元及推进电池级高纯复合氧化锆产线建设，双重布局固态电池核心材料，相关氧化锆样品已获部分固态电池材料厂家研发试用初步认可。</p><p>3、据2026年4月21日年报，公司是国内锆行业技术领先、产业链完整的高新技术企业，产品涵盖氯氧化锆、二氧化锆、复合氧化锆、氧化锆陶瓷结构件等六大系列百余品种，已构建从锆英砂原料到高端锆制品深加工的垂直一体化全产业链。</p></div>
+                </details>
+              </td>
+            </tr>
+
+            <tr class="stock-row"
+              data-code="002735"
+              data-name="王子新材"
+              data-price="16.18"
+              data-amount="8.35"
+              data-time="47565"
+              data-board="首板"
+              data-keywords="薄膜电容|可控核聚变|富士康概念"
+              data-search="王子新材 002735 16.18 8.35亿 13:12:45 首板 薄膜电容+可控核聚变+富士康概念 1、据2026年6月1日互动易，公司控股子公司宁波新容生产的薄膜电容属于基础电子元器件，可广泛应用于多行业、多领域；据2026年4月30日投资者关系活动记录表，宁波新容已为可控核聚变领域提供储能电容和支撑电容产品，2026年将进一步优化产能布局。&lt;br&gt;2、据2026年4月22日2025年年度报告，公司重点布局薄膜电容在新能源汽车、光伏、风力发电、可控核聚变及军工等行业的应用；据2026年4月30日投资者关系活动记录表，2026年公司将主动抢抓国内外核聚变相关产业商机。&lt;br&gt;3、据2026年4月22日2025年年度报告，公司成立之初主营电子制造业配套包装，服务富士康等国际电子制造业巨头，迅速成为行业领先供应商，目前主营塑料包装、军工电子、薄膜电容三大业务。">
+              <td>
+                <a href="#detail-002735" class="stock-name">王子新材</a>
+                <span class="stock-code">002735</span>
+              </td>
+              <td>16.18</td>
+              <td>8.35亿</td>
+              <td>13:12:45</td>
+              <td>首板</td>
+              <td class="keyword-cell">薄膜电容+可控核聚变+富士康概念</td>
+              <td class="reason-col">
+                <details>
+                  <summary>展开完整原因</summary>
+                  <div class="table-reason"><p>1、据2026年6月1日互动易，公司控股子公司宁波新容生产的薄膜电容属于基础电子元器件，可广泛应用于多行业、多领域；据2026年4月30日投资者关系活动记录表，宁波新容已为可控核聚变领域提供储能电容和支撑电容产品，2026年将进一步优化产能布局。</p><p>2、据2026年4月22日2025年年度报告，公司重点布局薄膜电容在新能源汽车、光伏、风力发电、可控核聚变及军工等行业的应用；据2026年4月30日投资者关系活动记录表，2026年公司将主动抢抓国内外核聚变相关产业商机。</p><p>3、据2026年4月22日2025年年度报告，公司成立之初主营电子制造业配套包装，服务富士康等国际电子制造业巨头，迅速成为行业领先供应商，目前主营塑料包装、军工电子、薄膜电容三大业务。</p></div>
+                </details>
+              </td>
+            </tr>
+
+            <tr class="stock-row"
+              data-code="600103"
+              data-name="青山纸业"
+              data-price="4.07"
+              data-amount="11.14"
+              data-time="38411"
+              data-board="首板"
+              data-keywords="光模块|林浆纸|福建国资"
+              data-search="青山纸业 600103 4.07 11.14亿 10:40:11 首板 光模块+林浆纸+福建国资 1、据2026年4月14日2025年年度报告，子公司深圳恒宝通持续开展400G/800G光模块技术研究及高速光器件封装技术研究，重点布局高端光模块产品研发与生产；据2025年半年报，400G产品已进入小批量试产阶段，800G光模块已完成设计，进入样品试制阶段。&lt;br&gt;2、据2026年4月14日2025年年度报告，公司已形成“林-浆-纸”产业链协同效应，2025年新型包装纸销量在公司纸包装销量中占比突破三分之一，竹浆等自主供应能力持续提升。&lt;br&gt;3、公司最终控制人为福建省人民政府国有资产监督管理委员会，属于国有企业。">
+              <td>
+                <a href="#detail-600103" class="stock-name">青山纸业</a>
+                <span class="stock-code">600103</span>
+              </td>
+              <td>4.07</td>
+              <td>11.14亿</td>
+              <td>10:40:11</td>
+              <td>首板</td>
+              <td class="keyword-cell">光模块+林浆纸+福建国资</td>
+              <td class="reason-col">
+                <details>
+                  <summary>展开完整原因</summary>
+                  <div class="table-reason"><p>1、据2026年4月14日2025年年度报告，子公司深圳恒宝通持续开展400G/800G光模块技术研究及高速光器件封装技术研究，重点布局高端光模块产品研发与生产；据2025年半年报，400G产品已进入小批量试产阶段，800G光模块已完成设计，进入样品试制阶段。</p><p>2、据2026年4月14日2025年年度报告，公司已形成“林-浆-纸”产业链协同效应，2025年新型包装纸销量在公司纸包装销量中占比突破三分之一，竹浆等自主供应能力持续提升。</p><p>3、公司最终控制人为福建省人民政府国有资产监督管理委员会，属于国有企业。</p></div>
+                </details>
+              </td>
+            </tr>
+
+            <tr class="stock-row"
+              data-code="600439"
+              data-name="瑞贝卡"
+              data-price="2.62"
+              data-amount="1.5"
+              data-time="36711"
+              data-board="首板"
+              data-keywords="跨境电商|发制品|业绩减亏"
+              data-search="瑞贝卡 600439 2.62 1.5亿 10:11:51 首板 跨境电商+发制品+业绩减亏 1、据2026年4月29日年报，公司跨境电商业务稳步发展，国际线上多渠道协同发力实现突破式增长，跨境独立站聚焦产品结构优化、转化效率提升和客单价拉升，销售业绩大幅增长，拉动了美洲市场收入增长。&lt;br&gt;2、据2026年4月29日年报，公司是国内发制品行业中生产规模和出口规模均领先的企业，主营假发饰品研产销，产品销往北美、非洲、欧洲等，拥有全球化研产销布局，系国家制造业“单项冠军企业”。&lt;br&gt;3、据2026年4月29日年报，公司2025年归母净利润-8190.02万元，亏损同比减少3571.90万元，主要得益于国内销售毛利率高于境外及跨境电商业务发展，盈利能力逐步改善。">
+              <td>
+                <a href="#detail-600439" class="stock-name">瑞贝卡</a>
+                <span class="stock-code">600439</span>
+              </td>
+              <td>2.62</td>
+              <td>1.5亿</td>
+              <td>10:11:51</td>
+              <td>首板</td>
+              <td class="keyword-cell">跨境电商+发制品+业绩减亏</td>
+              <td class="reason-col">
+                <details>
+                  <summary>展开完整原因</summary>
+                  <div class="table-reason"><p>1、据2026年4月29日年报，公司跨境电商业务稳步发展，国际线上多渠道协同发力实现突破式增长，跨境独立站聚焦产品结构优化、转化效率提升和客单价拉升，销售业绩大幅增长，拉动了美洲市场收入增长。</p><p>2、据2026年4月29日年报，公司是国内发制品行业中生产规模和出口规模均领先的企业，主营假发饰品研产销，产品销往北美、非洲、欧洲等，拥有全球化研产销布局，系国家制造业“单项冠军企业”。</p><p>3、据2026年4月29日年报，公司2025年归母净利润-8190.02万元，亏损同比减少3571.90万元，主要得益于国内销售毛利率高于境外及跨境电商业务发展，盈利能力逐步改善。</p></div>
+                </details>
+              </td>
+            </tr>
+
+            <tr class="stock-row"
+              data-code="600505"
+              data-name="西昌电力"
+              data-price="14.34"
+              data-amount="4.9"
+              data-time="50165"
+              data-board="首板"
+              data-keywords="绿色电力|业绩增长|央企"
+              data-search="西昌电力 600505 14.34 4.9亿 13:56:05 首板 绿色电力+业绩增长+央企 1、据2025年年度报告，公司拥有完整的发、输、配、售电产业链，自有电源为水力发电和光伏发电，属于国家优先发展的清洁可再生能源，自有及并网装机56.887万千瓦。&lt;br&gt;2、据2025年年度报告及2026年第一季度经营数据公告，公司2025年归母净利润同比增长43.63%，2026年一季度发电量同比增长9.13%；影响2025年业绩的主因包括售电量同比增长5.96%、自有和控股电站发电量同比增长5.89%及有效压降非生产性开支。&lt;br&gt;3、据2025年年度报告及公司信息，公司控股股东为国网四川省电力公司，最终控制人为国务院国有资产监督管理委员会。">
+              <td>
+                <a href="#detail-600505" class="stock-name">西昌电力</a>
+                <span class="stock-code">600505</span>
+              </td>
+              <td>14.34</td>
+              <td>4.9亿</td>
+              <td>13:56:05</td>
+              <td>首板</td>
+              <td class="keyword-cell">绿色电力+业绩增长+央企</td>
+              <td class="reason-col">
+                <details>
+                  <summary>展开完整原因</summary>
+                  <div class="table-reason"><p>1、据2025年年度报告，公司拥有完整的发、输、配、售电产业链，自有电源为水力发电和光伏发电，属于国家优先发展的清洁可再生能源，自有及并网装机56.887万千瓦。</p><p>2、据2025年年度报告及2026年第一季度经营数据公告，公司2025年归母净利润同比增长43.63%，2026年一季度发电量同比增长9.13%；影响2025年业绩的主因包括售电量同比增长5.96%、自有和控股电站发电量同比增长5.89%及有效压降非生产性开支。</p><p>3、据2025年年度报告及公司信息，公司控股股东为国网四川省电力公司，最终控制人为国务院国有资产监督管理委员会。</p></div>
+                </details>
+              </td>
+            </tr>
+
+            <tr class="stock-row"
+              data-code="600578"
+              data-name="京能电力"
+              data-price="9.34"
+              data-amount="30.05"
+              data-time="47754"
+              data-board="首板"
+              data-keywords="风光火储一体化|火电|北京国资"
+              data-search="京能电力 600578 9.34 30.05亿 13:15:54 首板 风光火储一体化+火电+北京国资 1、据2026年5月13日公告，公司乌兰察布京大1500MW“风光火储一体化”大型风电光伏基地项目获得核准，项目总装机150万千瓦，总投资87.41亿元。&lt;br&gt;2、据2026年5月26日异动公告及2025年年报，公司主营火力发电及供热，截至2025年末总装机容量2466.7万千瓦，其中火电装机2139万千瓦，是北京地区最大火电企业。&lt;br&gt;3、据2025年年报，公司最终控制人为北京市人民政府国有资产监督管理委员会，正转型综合能源服务商，布局“电热氢储”多能互补体系。">
+              <td>
+                <a href="#detail-600578" class="stock-name">京能电力</a>
+                <span class="stock-code">600578</span>
+              </td>
+              <td>9.34</td>
+              <td>30.05亿</td>
+              <td>13:15:54</td>
+              <td>首板</td>
+              <td class="keyword-cell">风光火储一体化+火电+北京国资</td>
+              <td class="reason-col">
+                <details>
+                  <summary>展开完整原因</summary>
+                  <div class="table-reason"><p>1、据2026年5月13日公告，公司乌兰察布京大1500MW“风光火储一体化”大型风电光伏基地项目获得核准，项目总装机150万千瓦，总投资87.41亿元。</p><p>2、据2026年5月26日异动公告及2025年年报，公司主营火力发电及供热，截至2025年末总装机容量2466.7万千瓦，其中火电装机2139万千瓦，是北京地区最大火电企业。</p><p>3、据2025年年报，公司最终控制人为北京市人民政府国有资产监督管理委员会，正转型综合能源服务商，布局“电热氢储”多能互补体系。</p></div>
+                </details>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mobile-list" id="mobileList">
+        
+        <article class="mobile-card"
+          data-code="001896"
+          data-board="首板"
+          data-keywords="参股算力|火电|河南国资"
+          data-search="豫能控股 001896 20.08 31.92亿 09:49:15 首板 参股算力+火电+河南国资 1、据2026年6月1日每日经济新闻，全国首个绿色算力全栈AI平台正式上线运行；据2026年6月1日财闻，电力板块走强缘于高温推进用电负荷、数据中心用电刚性扩张；据2026年3月21日公告，公司拟增资11亿元参股优天算力，持有其42.29%股权，间接参股从事超大规模数据中心业务的郑州合盈。&lt;br&gt;2、据2025年年度报告，公司是河南省集火力发电、新能源、抽水蓄能等于一体的省级资本控股综合能源上市公司，控股火电总装机7,660MW，600MW级高效机组占比超八成。&lt;br&gt;3、据2025年年度报告，公司控股股东为河南投资集团有限公司，实际控制人为河南省财政厅。">
+          <h3>豫能控股 <span class="stock-code">001896</span></h3>
+          <div class="meta-grid"><div><label>当前股价</label><strong>20.08</strong></div><div><label>今日成交金额</label><strong>31.92亿</strong></div><div><label>最终涨停时间</label><strong>09:49:15</strong></div><div><label>连板天数</label><strong>首板</strong></div><div><label>涨停关键词</label><strong>参股算力+火电+河南国资</strong></div><div><label>股票代码</label><strong>001896</strong></div></div>
+          <div class="reason-body"><p>1、据2026年6月1日每日经济新闻，全国首个绿色算力全栈AI平台正式上线运行；据2026年6月1日财闻，电力板块走强缘于高温推进用电负荷、数据中心用电刚性扩张；据2026年3月21日公告，公司拟增资11亿元参股优天算力，持有其42.29%股权，间接参股从事超大规模数据中心业务的郑州合盈。</p><p>2、据2025年年度报告，公司是河南省集火力发电、新能源、抽水蓄能等于一体的省级资本控股综合能源上市公司，控股火电总装机7,660MW，600MW级高效机组占比超八成。</p><p>3、据2025年年度报告，公司控股股东为河南投资集团有限公司，实际控制人为河南省财政厅。</p></div>
+        </article>
+
+        <article class="mobile-card"
+          data-code="002125"
+          data-board="首板"
+          data-keywords="固态电池|锰酸锂|电解二氧化锰|湘潭国资"
+          data-search="湘潭电化 002125 16.65 7.67亿 10:03:57 首板 固态电池+锰酸锂+电解二氧化锰+湘潭国资 1、据2026年5月18日业绩说明会，公司控股子公司广西立劲新材料有限公司正与部分固态电池企业就锰酸锂应用于半固态/固态电池领域开展合作研发，已取得一定进展，预计在2026年底或2027年初有所突破。&lt;br&gt;2、据2025年年报，公司锰酸锂年产能4万吨，市场占有率居行业前列；电解二氧化锰为“国家制造业单项冠军产品”，市场占有率保持行业领先。&lt;br&gt;3、据2025年年度报告，公司实际控制人为湘潭市人民政府国有资产监督管理委员会。">
+          <h3>湘潭电化 <span class="stock-code">002125</span></h3>
+          <div class="meta-grid"><div><label>当前股价</label><strong>16.65</strong></div><div><label>今日成交金额</label><strong>7.67亿</strong></div><div><label>最终涨停时间</label><strong>10:03:57</strong></div><div><label>连板天数</label><strong>首板</strong></div><div><label>涨停关键词</label><strong>固态电池+锰酸锂+电解二氧化锰+湘潭国资</strong></div><div><label>股票代码</label><strong>002125</strong></div></div>
+          <div class="reason-body"><p>1、据2026年5月18日业绩说明会，公司控股子公司广西立劲新材料有限公司正与部分固态电池企业就锰酸锂应用于半固态/固态电池领域开展合作研发，已取得一定进展，预计在2026年底或2027年初有所突破。</p><p>2、据2025年年报，公司锰酸锂年产能4万吨，市场占有率居行业前列；电解二氧化锰为“国家制造业单项冠军产品”，市场占有率保持行业领先。</p><p>3、据2025年年度报告，公司实际控制人为湘潭市人民政府国有资产监督管理委员会。</p></div>
+        </article>
+
+        <article class="mobile-card"
+          data-code="002167"
+          data-board="首板"
+          data-keywords="定增通过|固态电池|锆产品"
+          data-search="东方锆业 002167 14.73 11.27亿 10:40:36 首板 定增通过+固态电池+锆产品 1、据2026年6月2日公司公告，公司2026年第二次临时股东会审议通过了关于向特定对象发行A股股票预案的议案，拟募集资金11.70亿元用于电熔氧化锆及新能源电池级高纯复合氧化锆等项目。&lt;br&gt;2、据2026年4月21日年报及2026年4月27日业绩说明会，公司氧化锆粉末已作为添加剂应用于三元正极材料并供货头部电池企业；公司通过参股合肥固宁纪元及推进电池级高纯复合氧化锆产线建设，双重布局固态电池核心材料，相关氧化锆样品已获部分固态电池材料厂家研发试用初步认可。&lt;br&gt;3、据2026年4月21日年报，公司是国内锆行业技术领先、产业链完整的高新技术企业，产品涵盖氯氧化锆、二氧化锆、复合氧化锆、氧化锆陶瓷结构件等六大系列百余品种，已构建从锆英砂原料到高端锆制品深加工的垂直一体化全产业链。">
+          <h3>东方锆业 <span class="stock-code">002167</span></h3>
+          <div class="meta-grid"><div><label>当前股价</label><strong>14.73</strong></div><div><label>今日成交金额</label><strong>11.27亿</strong></div><div><label>最终涨停时间</label><strong>10:40:36</strong></div><div><label>连板天数</label><strong>首板</strong></div><div><label>涨停关键词</label><strong>定增通过+固态电池+锆产品</strong></div><div><label>股票代码</label><strong>002167</strong></div></div>
+          <div class="reason-body"><p>1、据2026年6月2日公司公告，公司2026年第二次临时股东会审议通过了关于向特定对象发行A股股票预案的议案，拟募集资金11.70亿元用于电熔氧化锆及新能源电池级高纯复合氧化锆等项目。</p><p>2、据2026年4月21日年报及2026年4月27日业绩说明会，公司氧化锆粉末已作为添加剂应用于三元正极材料并供货头部电池企业；公司通过参股合肥固宁纪元及推进电池级高纯复合氧化锆产线建设，双重布局固态电池核心材料，相关氧化锆样品已获部分固态电池材料厂家研发试用初步认可。</p><p>3、据2026年4月21日年报，公司是国内锆行业技术领先、产业链完整的高新技术企业，产品涵盖氯氧化锆、二氧化锆、复合氧化锆、氧化锆陶瓷结构件等六大系列百余品种，已构建从锆英砂原料到高端锆制品深加工的垂直一体化全产业链。</p></div>
+        </article>
+
+        <article class="mobile-card"
+          data-code="002735"
+          data-board="首板"
+          data-keywords="薄膜电容|可控核聚变|富士康概念"
+          data-search="王子新材 002735 16.18 8.35亿 13:12:45 首板 薄膜电容+可控核聚变+富士康概念 1、据2026年6月1日互动易，公司控股子公司宁波新容生产的薄膜电容属于基础电子元器件，可广泛应用于多行业、多领域；据2026年4月30日投资者关系活动记录表，宁波新容已为可控核聚变领域提供储能电容和支撑电容产品，2026年将进一步优化产能布局。&lt;br&gt;2、据2026年4月22日2025年年度报告，公司重点布局薄膜电容在新能源汽车、光伏、风力发电、可控核聚变及军工等行业的应用；据2026年4月30日投资者关系活动记录表，2026年公司将主动抢抓国内外核聚变相关产业商机。&lt;br&gt;3、据2026年4月22日2025年年度报告，公司成立之初主营电子制造业配套包装，服务富士康等国际电子制造业巨头，迅速成为行业领先供应商，目前主营塑料包装、军工电子、薄膜电容三大业务。">
+          <h3>王子新材 <span class="stock-code">002735</span></h3>
+          <div class="meta-grid"><div><label>当前股价</label><strong>16.18</strong></div><div><label>今日成交金额</label><strong>8.35亿</strong></div><div><label>最终涨停时间</label><strong>13:12:45</strong></div><div><label>连板天数</label><strong>首板</strong></div><div><label>涨停关键词</label><strong>薄膜电容+可控核聚变+富士康概念</strong></div><div><label>股票代码</label><strong>002735</strong></div></div>
+          <div class="reason-body"><p>1、据2026年6月1日互动易，公司控股子公司宁波新容生产的薄膜电容属于基础电子元器件，可广泛应用于多行业、多领域；据2026年4月30日投资者关系活动记录表，宁波新容已为可控核聚变领域提供储能电容和支撑电容产品，2026年将进一步优化产能布局。</p><p>2、据2026年4月22日2025年年度报告，公司重点布局薄膜电容在新能源汽车、光伏、风力发电、可控核聚变及军工等行业的应用；据2026年4月30日投资者关系活动记录表，2026年公司将主动抢抓国内外核聚变相关产业商机。</p><p>3、据2026年4月22日2025年年度报告，公司成立之初主营电子制造业配套包装，服务富士康等国际电子制造业巨头，迅速成为行业领先供应商，目前主营塑料包装、军工电子、薄膜电容三大业务。</p></div>
+        </article>
+
+        <article class="mobile-card"
+          data-code="600103"
+          data-board="首板"
+          data-keywords="光模块|林浆纸|福建国资"
+          data-search="青山纸业 600103 4.07 11.14亿 10:40:11 首板 光模块+林浆纸+福建国资 1、据2026年4月14日2025年年度报告，子公司深圳恒宝通持续开展400G/800G光模块技术研究及高速光器件封装技术研究，重点布局高端光模块产品研发与生产；据2025年半年报，400G产品已进入小批量试产阶段，800G光模块已完成设计，进入样品试制阶段。&lt;br&gt;2、据2026年4月14日2025年年度报告，公司已形成“林-浆-纸”产业链协同效应，2025年新型包装纸销量在公司纸包装销量中占比突破三分之一，竹浆等自主供应能力持续提升。&lt;br&gt;3、公司最终控制人为福建省人民政府国有资产监督管理委员会，属于国有企业。">
+          <h3>青山纸业 <span class="stock-code">600103</span></h3>
+          <div class="meta-grid"><div><label>当前股价</label><strong>4.07</strong></div><div><label>今日成交金额</label><strong>11.14亿</strong></div><div><label>最终涨停时间</label><strong>10:40:11</strong></div><div><label>连板天数</label><strong>首板</strong></div><div><label>涨停关键词</label><strong>光模块+林浆纸+福建国资</strong></div><div><label>股票代码</label><strong>600103</strong></div></div>
+          <div class="reason-body"><p>1、据2026年4月14日2025年年度报告，子公司深圳恒宝通持续开展400G/800G光模块技术研究及高速光器件封装技术研究，重点布局高端光模块产品研发与生产；据2025年半年报，400G产品已进入小批量试产阶段，800G光模块已完成设计，进入样品试制阶段。</p><p>2、据2026年4月14日2025年年度报告，公司已形成“林-浆-纸”产业链协同效应，2025年新型包装纸销量在公司纸包装销量中占比突破三分之一，竹浆等自主供应能力持续提升。</p><p>3、公司最终控制人为福建省人民政府国有资产监督管理委员会，属于国有企业。</p></div>
+        </article>
+
+        <article class="mobile-card"
+          data-code="600439"
+          data-board="首板"
+          data-keywords="跨境电商|发制品|业绩减亏"
+          data-search="瑞贝卡 600439 2.62 1.5亿 10:11:51 首板 跨境电商+发制品+业绩减亏 1、据2026年4月29日年报，公司跨境电商业务稳步发展，国际线上多渠道协同发力实现突破式增长，跨境独立站聚焦产品结构优化、转化效率提升和客单价拉升，销售业绩大幅增长，拉动了美洲市场收入增长。&lt;br&gt;2、据2026年4月29日年报，公司是国内发制品行业中生产规模和出口规模均领先的企业，主营假发饰品研产销，产品销往北美、非洲、欧洲等，拥有全球化研产销布局，系国家制造业“单项冠军企业”。&lt;br&gt;3、据2026年4月29日年报，公司2025年归母净利润-8190.02万元，亏损同比减少3571.90万元，主要得益于国内销售毛利率高于境外及跨境电商业务发展，盈利能力逐步改善。">
+          <h3>瑞贝卡 <span class="stock-code">600439</span></h3>
+          <div class="meta-grid"><div><label>当前股价</label><strong>2.62</strong></div><div><label>今日成交金额</label><strong>1.5亿</strong></div><div><label>最终涨停时间</label><strong>10:11:51</strong></div><div><label>连板天数</label><strong>首板</strong></div><div><label>涨停关键词</label><strong>跨境电商+发制品+业绩减亏</strong></div><div><label>股票代码</label><strong>600439</strong></div></div>
+          <div class="reason-body"><p>1、据2026年4月29日年报，公司跨境电商业务稳步发展，国际线上多渠道协同发力实现突破式增长，跨境独立站聚焦产品结构优化、转化效率提升和客单价拉升，销售业绩大幅增长，拉动了美洲市场收入增长。</p><p>2、据2026年4月29日年报，公司是国内发制品行业中生产规模和出口规模均领先的企业，主营假发饰品研产销，产品销往北美、非洲、欧洲等，拥有全球化研产销布局，系国家制造业“单项冠军企业”。</p><p>3、据2026年4月29日年报，公司2025年归母净利润-8190.02万元，亏损同比减少3571.90万元，主要得益于国内销售毛利率高于境外及跨境电商业务发展，盈利能力逐步改善。</p></div>
+        </article>
+
+        <article class="mobile-card"
+          data-code="600505"
+          data-board="首板"
+          data-keywords="绿色电力|业绩增长|央企"
+          data-search="西昌电力 600505 14.34 4.9亿 13:56:05 首板 绿色电力+业绩增长+央企 1、据2025年年度报告，公司拥有完整的发、输、配、售电产业链，自有电源为水力发电和光伏发电，属于国家优先发展的清洁可再生能源，自有及并网装机56.887万千瓦。&lt;br&gt;2、据2025年年度报告及2026年第一季度经营数据公告，公司2025年归母净利润同比增长43.63%，2026年一季度发电量同比增长9.13%；影响2025年业绩的主因包括售电量同比增长5.96%、自有和控股电站发电量同比增长5.89%及有效压降非生产性开支。&lt;br&gt;3、据2025年年度报告及公司信息，公司控股股东为国网四川省电力公司，最终控制人为国务院国有资产监督管理委员会。">
+          <h3>西昌电力 <span class="stock-code">600505</span></h3>
+          <div class="meta-grid"><div><label>当前股价</label><strong>14.34</strong></div><div><label>今日成交金额</label><strong>4.9亿</strong></div><div><label>最终涨停时间</label><strong>13:56:05</strong></div><div><label>连板天数</label><strong>首板</strong></div><div><label>涨停关键词</label><strong>绿色电力+业绩增长+央企</strong></div><div><label>股票代码</label><strong>600505</strong></div></div>
+          <div class="reason-body"><p>1、据2025年年度报告，公司拥有完整的发、输、配、售电产业链，自有电源为水力发电和光伏发电，属于国家优先发展的清洁可再生能源，自有及并网装机56.887万千瓦。</p><p>2、据2025年年度报告及2026年第一季度经营数据公告，公司2025年归母净利润同比增长43.63%，2026年一季度发电量同比增长9.13%；影响2025年业绩的主因包括售电量同比增长5.96%、自有和控股电站发电量同比增长5.89%及有效压降非生产性开支。</p><p>3、据2025年年度报告及公司信息，公司控股股东为国网四川省电力公司，最终控制人为国务院国有资产监督管理委员会。</p></div>
+        </article>
+
+        <article class="mobile-card"
+          data-code="600578"
+          data-board="首板"
+          data-keywords="风光火储一体化|火电|北京国资"
+          data-search="京能电力 600578 9.34 30.05亿 13:15:54 首板 风光火储一体化+火电+北京国资 1、据2026年5月13日公告，公司乌兰察布京大1500MW“风光火储一体化”大型风电光伏基地项目获得核准，项目总装机150万千瓦，总投资87.41亿元。&lt;br&gt;2、据2026年5月26日异动公告及2025年年报，公司主营火力发电及供热，截至2025年末总装机容量2466.7万千瓦，其中火电装机2139万千瓦，是北京地区最大火电企业。&lt;br&gt;3、据2025年年报，公司最终控制人为北京市人民政府国有资产监督管理委员会，正转型综合能源服务商，布局“电热氢储”多能互补体系。">
+          <h3>京能电力 <span class="stock-code">600578</span></h3>
+          <div class="meta-grid"><div><label>当前股价</label><strong>9.34</strong></div><div><label>今日成交金额</label><strong>30.05亿</strong></div><div><label>最终涨停时间</label><strong>13:15:54</strong></div><div><label>连板天数</label><strong>首板</strong></div><div><label>涨停关键词</label><strong>风光火储一体化+火电+北京国资</strong></div><div><label>股票代码</label><strong>600578</strong></div></div>
+          <div class="reason-body"><p>1、据2026年5月13日公告，公司乌兰察布京大1500MW“风光火储一体化”大型风电光伏基地项目获得核准，项目总装机150万千瓦，总投资87.41亿元。</p><p>2、据2026年5月26日异动公告及2025年年报，公司主营火力发电及供热，截至2025年末总装机容量2466.7万千瓦，其中火电装机2139万千瓦，是北京地区最大火电企业。</p><p>3、据2025年年报，公司最终控制人为北京市人民政府国有资产监督管理委员会，正转型综合能源服务商，布局“电热氢储”多能互补体系。</p></div>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="timeline-title">
+      <div class="section-head">
+        <div>
+          <h2 id="timeline-title">封板时间轴</h2>
+          <p>按最终涨停时间升序排列。</p>
+        </div>
+      </div>
+      <div class="timeline" id="timelineList">
+        
+        <article class="timeline-item"
+          data-code="001896"
+          data-board="首板"
+          data-keywords="参股算力|火电|河南国资"
+          data-search="豫能控股 001896 20.08 31.92亿 09:49:15 首板 参股算力+火电+河南国资 1、据2026年6月1日每日经济新闻，全国首个绿色算力全栈AI平台正式上线运行；据2026年6月1日财闻，电力板块走强缘于高温推进用电负荷、数据中心用电刚性扩张；据2026年3月21日公告，公司拟增资11亿元参股优天算力，持有其42.29%股权，间接参股从事超大规模数据中心业务的郑州合盈。&lt;br&gt;2、据2025年年度报告，公司是河南省集火力发电、新能源、抽水蓄能等于一体的省级资本控股综合能源上市公司，控股火电总装机7,660MW，600MW级高效机组占比超八成。&lt;br&gt;3、据2025年年度报告，公司控股股东为河南投资集团有限公司，实际控制人为河南省财政厅。">
+          <time>09:49:15</time>
+          <strong>豫能控股</strong>
+          <span>参股算力+火电+河南国资</span>
+        </article>
+
+        <article class="timeline-item"
+          data-code="002125"
+          data-board="首板"
+          data-keywords="固态电池|锰酸锂|电解二氧化锰|湘潭国资"
+          data-search="湘潭电化 002125 16.65 7.67亿 10:03:57 首板 固态电池+锰酸锂+电解二氧化锰+湘潭国资 1、据2026年5月18日业绩说明会，公司控股子公司广西立劲新材料有限公司正与部分固态电池企业就锰酸锂应用于半固态/固态电池领域开展合作研发，已取得一定进展，预计在2026年底或2027年初有所突破。&lt;br&gt;2、据2025年年报，公司锰酸锂年产能4万吨，市场占有率居行业前列；电解二氧化锰为“国家制造业单项冠军产品”，市场占有率保持行业领先。&lt;br&gt;3、据2025年年度报告，公司实际控制人为湘潭市人民政府国有资产监督管理委员会。">
+          <time>10:03:57</time>
+          <strong>湘潭电化</strong>
+          <span>固态电池+锰酸锂+电解二氧化锰+湘潭国资</span>
+        </article>
+
+        <article class="timeline-item"
+          data-code="600439"
+          data-board="首板"
+          data-keywords="跨境电商|发制品|业绩减亏"
+          data-search="瑞贝卡 600439 2.62 1.5亿 10:11:51 首板 跨境电商+发制品+业绩减亏 1、据2026年4月29日年报，公司跨境电商业务稳步发展，国际线上多渠道协同发力实现突破式增长，跨境独立站聚焦产品结构优化、转化效率提升和客单价拉升，销售业绩大幅增长，拉动了美洲市场收入增长。&lt;br&gt;2、据2026年4月29日年报，公司是国内发制品行业中生产规模和出口规模均领先的企业，主营假发饰品研产销，产品销往北美、非洲、欧洲等，拥有全球化研产销布局，系国家制造业“单项冠军企业”。&lt;br&gt;3、据2026年4月29日年报，公司2025年归母净利润-8190.02万元，亏损同比减少3571.90万元，主要得益于国内销售毛利率高于境外及跨境电商业务发展，盈利能力逐步改善。">
+          <time>10:11:51</time>
+          <strong>瑞贝卡</strong>
+          <span>跨境电商+发制品+业绩减亏</span>
+        </article>
+
+        <article class="timeline-item"
+          data-code="600103"
+          data-board="首板"
+          data-keywords="光模块|林浆纸|福建国资"
+          data-search="青山纸业 600103 4.07 11.14亿 10:40:11 首板 光模块+林浆纸+福建国资 1、据2026年4月14日2025年年度报告，子公司深圳恒宝通持续开展400G/800G光模块技术研究及高速光器件封装技术研究，重点布局高端光模块产品研发与生产；据2025年半年报，400G产品已进入小批量试产阶段，800G光模块已完成设计，进入样品试制阶段。&lt;br&gt;2、据2026年4月14日2025年年度报告，公司已形成“林-浆-纸”产业链协同效应，2025年新型包装纸销量在公司纸包装销量中占比突破三分之一，竹浆等自主供应能力持续提升。&lt;br&gt;3、公司最终控制人为福建省人民政府国有资产监督管理委员会，属于国有企业。">
+          <time>10:40:11</time>
+          <strong>青山纸业</strong>
+          <span>光模块+林浆纸+福建国资</span>
+        </article>
+
+        <article class="timeline-item"
+          data-code="002167"
+          data-board="首板"
+          data-keywords="定增通过|固态电池|锆产品"
+          data-search="东方锆业 002167 14.73 11.27亿 10:40:36 首板 定增通过+固态电池+锆产品 1、据2026年6月2日公司公告，公司2026年第二次临时股东会审议通过了关于向特定对象发行A股股票预案的议案，拟募集资金11.70亿元用于电熔氧化锆及新能源电池级高纯复合氧化锆等项目。&lt;br&gt;2、据2026年4月21日年报及2026年4月27日业绩说明会，公司氧化锆粉末已作为添加剂应用于三元正极材料并供货头部电池企业；公司通过参股合肥固宁纪元及推进电池级高纯复合氧化锆产线建设，双重布局固态电池核心材料，相关氧化锆样品已获部分固态电池材料厂家研发试用初步认可。&lt;br&gt;3、据2026年4月21日年报，公司是国内锆行业技术领先、产业链完整的高新技术企业，产品涵盖氯氧化锆、二氧化锆、复合氧化锆、氧化锆陶瓷结构件等六大系列百余品种，已构建从锆英砂原料到高端锆制品深加工的垂直一体化全产业链。">
+          <time>10:40:36</time>
+          <strong>东方锆业</strong>
+          <span>定增通过+固态电池+锆产品</span>
+        </article>
+
+        <article class="timeline-item"
+          data-code="002735"
+          data-board="首板"
+          data-keywords="薄膜电容|可控核聚变|富士康概念"
+          data-search="王子新材 002735 16.18 8.35亿 13:12:45 首板 薄膜电容+可控核聚变+富士康概念 1、据2026年6月1日互动易，公司控股子公司宁波新容生产的薄膜电容属于基础电子元器件，可广泛应用于多行业、多领域；据2026年4月30日投资者关系活动记录表，宁波新容已为可控核聚变领域提供储能电容和支撑电容产品，2026年将进一步优化产能布局。&lt;br&gt;2、据2026年4月22日2025年年度报告，公司重点布局薄膜电容在新能源汽车、光伏、风力发电、可控核聚变及军工等行业的应用；据2026年4月30日投资者关系活动记录表，2026年公司将主动抢抓国内外核聚变相关产业商机。&lt;br&gt;3、据2026年4月22日2025年年度报告，公司成立之初主营电子制造业配套包装，服务富士康等国际电子制造业巨头，迅速成为行业领先供应商，目前主营塑料包装、军工电子、薄膜电容三大业务。">
+          <time>13:12:45</time>
+          <strong>王子新材</strong>
+          <span>薄膜电容+可控核聚变+富士康概念</span>
+        </article>
+
+        <article class="timeline-item"
+          data-code="600578"
+          data-board="首板"
+          data-keywords="风光火储一体化|火电|北京国资"
+          data-search="京能电力 600578 9.34 30.05亿 13:15:54 首板 风光火储一体化+火电+北京国资 1、据2026年5月13日公告，公司乌兰察布京大1500MW“风光火储一体化”大型风电光伏基地项目获得核准，项目总装机150万千瓦，总投资87.41亿元。&lt;br&gt;2、据2026年5月26日异动公告及2025年年报，公司主营火力发电及供热，截至2025年末总装机容量2466.7万千瓦，其中火电装机2139万千瓦，是北京地区最大火电企业。&lt;br&gt;3、据2025年年报，公司最终控制人为北京市人民政府国有资产监督管理委员会，正转型综合能源服务商，布局“电热氢储”多能互补体系。">
+          <time>13:15:54</time>
+          <strong>京能电力</strong>
+          <span>风光火储一体化+火电+北京国资</span>
+        </article>
+
+        <article class="timeline-item"
+          data-code="600505"
+          data-board="首板"
+          data-keywords="绿色电力|业绩增长|央企"
+          data-search="西昌电力 600505 14.34 4.9亿 13:56:05 首板 绿色电力+业绩增长+央企 1、据2025年年度报告，公司拥有完整的发、输、配、售电产业链，自有电源为水力发电和光伏发电，属于国家优先发展的清洁可再生能源，自有及并网装机56.887万千瓦。&lt;br&gt;2、据2025年年度报告及2026年第一季度经营数据公告，公司2025年归母净利润同比增长43.63%，2026年一季度发电量同比增长9.13%；影响2025年业绩的主因包括售电量同比增长5.96%、自有和控股电站发电量同比增长5.89%及有效压降非生产性开支。&lt;br&gt;3、据2025年年度报告及公司信息，公司控股股东为国网四川省电力公司，最终控制人为国务院国有资产监督管理委员会。">
+          <time>13:56:05</time>
+          <strong>西昌电力</strong>
+          <span>绿色电力+业绩增长+央企</span>
+        </article>
+      </div>
+    </section>
+
+    <section id="details" aria-labelledby="details-title">
+      <div class="section-head">
+        <div>
+          <h2 id="details-title">原因全文</h2>
+          <p>每条“涨停原因内容”按原始换行拆分展示，保留日期、金额、比例、项目规模和主体信息。</p>
+        </div>
+      </div>
+      <div class="detail-grid" id="detailList">
+        
+        <article id="detail-001896" class="detail-card"
+          data-code="001896"
+          data-board="首板"
+          data-keywords="参股算力|火电|河南国资"
+          data-search="豫能控股 001896 20.08 31.92亿 09:49:15 首板 参股算力+火电+河南国资 1、据2026年6月1日每日经济新闻，全国首个绿色算力全栈AI平台正式上线运行；据2026年6月1日财闻，电力板块走强缘于高温推进用电负荷、数据中心用电刚性扩张；据2026年3月21日公告，公司拟增资11亿元参股优天算力，持有其42.29%股权，间接参股从事超大规模数据中心业务的郑州合盈。&lt;br&gt;2、据2025年年度报告，公司是河南省集火力发电、新能源、抽水蓄能等于一体的省级资本控股综合能源上市公司，控股火电总装机7,660MW，600MW级高效机组占比超八成。&lt;br&gt;3、据2025年年度报告，公司控股股东为河南投资集团有限公司，实际控制人为河南省财政厅。">
+          <div class="detail-top">
+            <div>
+              <h3>豫能控股 <span class="stock-code">001896</span></h3>
+              <div class="detail-tags"><span>参股算力</span><span>火电</span><span>河南国资</span></div>
+            </div>
+            <span class="pill">09:49:15</span>
+          </div>
+          <div class="meta-grid"><div><label>当前股价</label><strong>20.08</strong></div><div><label>今日成交金额</label><strong>31.92亿</strong></div><div><label>最终涨停时间</label><strong>09:49:15</strong></div><div><label>连板天数</label><strong>首板</strong></div><div><label>涨停关键词</label><strong>参股算力+火电+河南国资</strong></div><div><label>股票代码</label><strong>001896</strong></div></div>
+          <div class="reason-body"><p>1、据2026年6月1日每日经济新闻，全国首个绿色算力全栈AI平台正式上线运行；据2026年6月1日财闻，电力板块走强缘于高温推进用电负荷、数据中心用电刚性扩张；据2026年3月21日公告，公司拟增资11亿元参股优天算力，持有其42.29%股权，间接参股从事超大规模数据中心业务的郑州合盈。</p><p>2、据2025年年度报告，公司是河南省集火力发电、新能源、抽水蓄能等于一体的省级资本控股综合能源上市公司，控股火电总装机7,660MW，600MW级高效机组占比超八成。</p><p>3、据2025年年度报告，公司控股股东为河南投资集团有限公司，实际控制人为河南省财政厅。</p></div>
+        </article>
+
+        <article id="detail-002125" class="detail-card"
+          data-code="002125"
+          data-board="首板"
+          data-keywords="固态电池|锰酸锂|电解二氧化锰|湘潭国资"
+          data-search="湘潭电化 002125 16.65 7.67亿 10:03:57 首板 固态电池+锰酸锂+电解二氧化锰+湘潭国资 1、据2026年5月18日业绩说明会，公司控股子公司广西立劲新材料有限公司正与部分固态电池企业就锰酸锂应用于半固态/固态电池领域开展合作研发，已取得一定进展，预计在2026年底或2027年初有所突破。&lt;br&gt;2、据2025年年报，公司锰酸锂年产能4万吨，市场占有率居行业前列；电解二氧化锰为“国家制造业单项冠军产品”，市场占有率保持行业领先。&lt;br&gt;3、据2025年年度报告，公司实际控制人为湘潭市人民政府国有资产监督管理委员会。">
+          <div class="detail-top">
+            <div>
+              <h3>湘潭电化 <span class="stock-code">002125</span></h3>
+              <div class="detail-tags"><span>固态电池</span><span>锰酸锂</span><span>电解二氧化锰</span><span>湘潭国资</span></div>
+            </div>
+            <span class="pill">10:03:57</span>
+          </div>
+          <div class="meta-grid"><div><label>当前股价</label><strong>16.65</strong></div><div><label>今日成交金额</label><strong>7.67亿</strong></div><div><label>最终涨停时间</label><strong>10:03:57</strong></div><div><label>连板天数</label><strong>首板</strong></div><div><label>涨停关键词</label><strong>固态电池+锰酸锂+电解二氧化锰+湘潭国资</strong></div><div><label>股票代码</label><strong>002125</strong></div></div>
+          <div class="reason-body"><p>1、据2026年5月18日业绩说明会，公司控股子公司广西立劲新材料有限公司正与部分固态电池企业就锰酸锂应用于半固态/固态电池领域开展合作研发，已取得一定进展，预计在2026年底或2027年初有所突破。</p><p>2、据2025年年报，公司锰酸锂年产能4万吨，市场占有率居行业前列；电解二氧化锰为“国家制造业单项冠军产品”，市场占有率保持行业领先。</p><p>3、据2025年年度报告，公司实际控制人为湘潭市人民政府国有资产监督管理委员会。</p></div>
+        </article>
+
+        <article id="detail-002167" class="detail-card"
+          data-code="002167"
+          data-board="首板"
+          data-keywords="定增通过|固态电池|锆产品"
+          data-search="东方锆业 002167 14.73 11.27亿 10:40:36 首板 定增通过+固态电池+锆产品 1、据2026年6月2日公司公告，公司2026年第二次临时股东会审议通过了关于向特定对象发行A股股票预案的议案，拟募集资金11.70亿元用于电熔氧化锆及新能源电池级高纯复合氧化锆等项目。&lt;br&gt;2、据2026年4月21日年报及2026年4月27日业绩说明会，公司氧化锆粉末已作为添加剂应用于三元正极材料并供货头部电池企业；公司通过参股合肥固宁纪元及推进电池级高纯复合氧化锆产线建设，双重布局固态电池核心材料，相关氧化锆样品已获部分固态电池材料厂家研发试用初步认可。&lt;br&gt;3、据2026年4月21日年报，公司是国内锆行业技术领先、产业链完整的高新技术企业，产品涵盖氯氧化锆、二氧化锆、复合氧化锆、氧化锆陶瓷结构件等六大系列百余品种，已构建从锆英砂原料到高端锆制品深加工的垂直一体化全产业链。">
+          <div class="detail-top">
+            <div>
+              <h3>东方锆业 <span class="stock-code">002167</span></h3>
+              <div class="detail-tags"><span>定增通过</span><span>固态电池</span><span>锆产品</span></div>
+            </div>
+            <span class="pill">10:40:36</span>
+          </div>
+          <div class="meta-grid"><div><label>当前股价</label><strong>14.73</strong></div><div><label>今日成交金额</label><strong>11.27亿</strong></div><div><label>最终涨停时间</label><strong>10:40:36</strong></div><div><label>连板天数</label><strong>首板</strong></div><div><label>涨停关键词</label><strong>定增通过+固态电池+锆产品</strong></div><div><label>股票代码</label><strong>002167</strong></div></div>
+          <div class="reason-body"><p>1、据2026年6月2日公司公告，公司2026年第二次临时股东会审议通过了关于向特定对象发行A股股票预案的议案，拟募集资金11.70亿元用于电熔氧化锆及新能源电池级高纯复合氧化锆等项目。</p><p>2、据2026年4月21日年报及2026年4月27日业绩说明会，公司氧化锆粉末已作为添加剂应用于三元正极材料并供货头部电池企业；公司通过参股合肥固宁纪元及推进电池级高纯复合氧化锆产线建设，双重布局固态电池核心材料，相关氧化锆样品已获部分固态电池材料厂家研发试用初步认可。</p><p>3、据2026年4月21日年报，公司是国内锆行业技术领先、产业链完整的高新技术企业，产品涵盖氯氧化锆、二氧化锆、复合氧化锆、氧化锆陶瓷结构件等六大系列百余品种，已构建从锆英砂原料到高端锆制品深加工的垂直一体化全产业链。</p></div>
+        </article>
+
+        <article id="detail-002735" class="detail-card"
+          data-code="002735"
+          data-board="首板"
+          data-keywords="薄膜电容|可控核聚变|富士康概念"
+          data-search="王子新材 002735 16.18 8.35亿 13:12:45 首板 薄膜电容+可控核聚变+富士康概念 1、据2026年6月1日互动易，公司控股子公司宁波新容生产的薄膜电容属于基础电子元器件，可广泛应用于多行业、多领域；据2026年4月30日投资者关系活动记录表，宁波新容已为可控核聚变领域提供储能电容和支撑电容产品，2026年将进一步优化产能布局。&lt;br&gt;2、据2026年4月22日2025年年度报告，公司重点布局薄膜电容在新能源汽车、光伏、风力发电、可控核聚变及军工等行业的应用；据2026年4月30日投资者关系活动记录表，2026年公司将主动抢抓国内外核聚变相关产业商机。&lt;br&gt;3、据2026年4月22日2025年年度报告，公司成立之初主营电子制造业配套包装，服务富士康等国际电子制造业巨头，迅速成为行业领先供应商，目前主营塑料包装、军工电子、薄膜电容三大业务。">
+          <div class="detail-top">
+            <div>
+              <h3>王子新材 <span class="stock-code">002735</span></h3>
+              <div class="detail-tags"><span>薄膜电容</span><span>可控核聚变</span><span>富士康概念</span></div>
+            </div>
+            <span class="pill">13:12:45</span>
+          </div>
+          <div class="meta-grid"><div><label>当前股价</label><strong>16.18</strong></div><div><label>今日成交金额</label><strong>8.35亿</strong></div><div><label>最终涨停时间</label><strong>13:12:45</strong></div><div><label>连板天数</label><strong>首板</strong></div><div><label>涨停关键词</label><strong>薄膜电容+可控核聚变+富士康概念</strong></div><div><label>股票代码</label><strong>002735</strong></div></div>
+          <div class="reason-body"><p>1、据2026年6月1日互动易，公司控股子公司宁波新容生产的薄膜电容属于基础电子元器件，可广泛应用于多行业、多领域；据2026年4月30日投资者关系活动记录表，宁波新容已为可控核聚变领域提供储能电容和支撑电容产品，2026年将进一步优化产能布局。</p><p>2、据2026年4月22日2025年年度报告，公司重点布局薄膜电容在新能源汽车、光伏、风力发电、可控核聚变及军工等行业的应用；据2026年4月30日投资者关系活动记录表，2026年公司将主动抢抓国内外核聚变相关产业商机。</p><p>3、据2026年4月22日2025年年度报告，公司成立之初主营电子制造业配套包装，服务富士康等国际电子制造业巨头，迅速成为行业领先供应商，目前主营塑料包装、军工电子、薄膜电容三大业务。</p></div>
+        </article>
+
+        <article id="detail-600103" class="detail-card"
+          data-code="600103"
+          data-board="首板"
+          data-keywords="光模块|林浆纸|福建国资"
+          data-search="青山纸业 600103 4.07 11.14亿 10:40:11 首板 光模块+林浆纸+福建国资 1、据2026年4月14日2025年年度报告，子公司深圳恒宝通持续开展400G/800G光模块技术研究及高速光器件封装技术研究，重点布局高端光模块产品研发与生产；据2025年半年报，400G产品已进入小批量试产阶段，800G光模块已完成设计，进入样品试制阶段。&lt;br&gt;2、据2026年4月14日2025年年度报告，公司已形成“林-浆-纸”产业链协同效应，2025年新型包装纸销量在公司纸包装销量中占比突破三分之一，竹浆等自主供应能力持续提升。&lt;br&gt;3、公司最终控制人为福建省人民政府国有资产监督管理委员会，属于国有企业。">
+          <div class="detail-top">
+            <div>
+              <h3>青山纸业 <span class="stock-code">600103</span></h3>
+              <div class="detail-tags"><span>光模块</span><span>林浆纸</span><span>福建国资</span></div>
+            </div>
+            <span class="pill">10:40:11</span>
+          </div>
+          <div class="meta-grid"><div><label>当前股价</label><strong>4.07</strong></div><div><label>今日成交金额</label><strong>11.14亿</strong></div><div><label>最终涨停时间</label><strong>10:40:11</strong></div><div><label>连板天数</label><strong>首板</strong></div><div><label>涨停关键词</label><strong>光模块+林浆纸+福建国资</strong></div><div><label>股票代码</label><strong>600103</strong></div></div>
+          <div class="reason-body"><p>1、据2026年4月14日2025年年度报告，子公司深圳恒宝通持续开展400G/800G光模块技术研究及高速光器件封装技术研究，重点布局高端光模块产品研发与生产；据2025年半年报，400G产品已进入小批量试产阶段，800G光模块已完成设计，进入样品试制阶段。</p><p>2、据2026年4月14日2025年年度报告，公司已形成“林-浆-纸”产业链协同效应，2025年新型包装纸销量在公司纸包装销量中占比突破三分之一，竹浆等自主供应能力持续提升。</p><p>3、公司最终控制人为福建省人民政府国有资产监督管理委员会，属于国有企业。</p></div>
+        </article>
+
+        <article id="detail-600439" class="detail-card"
+          data-code="600439"
+          data-board="首板"
+          data-keywords="跨境电商|发制品|业绩减亏"
+          data-search="瑞贝卡 600439 2.62 1.5亿 10:11:51 首板 跨境电商+发制品+业绩减亏 1、据2026年4月29日年报，公司跨境电商业务稳步发展，国际线上多渠道协同发力实现突破式增长，跨境独立站聚焦产品结构优化、转化效率提升和客单价拉升，销售业绩大幅增长，拉动了美洲市场收入增长。&lt;br&gt;2、据2026年4月29日年报，公司是国内发制品行业中生产规模和出口规模均领先的企业，主营假发饰品研产销，产品销往北美、非洲、欧洲等，拥有全球化研产销布局，系国家制造业“单项冠军企业”。&lt;br&gt;3、据2026年4月29日年报，公司2025年归母净利润-8190.02万元，亏损同比减少3571.90万元，主要得益于国内销售毛利率高于境外及跨境电商业务发展，盈利能力逐步改善。">
+          <div class="detail-top">
+            <div>
+              <h3>瑞贝卡 <span class="stock-code">600439</span></h3>
+              <div class="detail-tags"><span>跨境电商</span><span>发制品</span><span>业绩减亏</span></div>
+            </div>
+            <span class="pill">10:11:51</span>
+          </div>
+          <div class="meta-grid"><div><label>当前股价</label><strong>2.62</strong></div><div><label>今日成交金额</label><strong>1.5亿</strong></div><div><label>最终涨停时间</label><strong>10:11:51</strong></div><div><label>连板天数</label><strong>首板</strong></div><div><label>涨停关键词</label><strong>跨境电商+发制品+业绩减亏</strong></div><div><label>股票代码</label><strong>600439</strong></div></div>
+          <div class="reason-body"><p>1、据2026年4月29日年报，公司跨境电商业务稳步发展，国际线上多渠道协同发力实现突破式增长，跨境独立站聚焦产品结构优化、转化效率提升和客单价拉升，销售业绩大幅增长，拉动了美洲市场收入增长。</p><p>2、据2026年4月29日年报，公司是国内发制品行业中生产规模和出口规模均领先的企业，主营假发饰品研产销，产品销往北美、非洲、欧洲等，拥有全球化研产销布局，系国家制造业“单项冠军企业”。</p><p>3、据2026年4月29日年报，公司2025年归母净利润-8190.02万元，亏损同比减少3571.90万元，主要得益于国内销售毛利率高于境外及跨境电商业务发展，盈利能力逐步改善。</p></div>
+        </article>
+
+        <article id="detail-600505" class="detail-card"
+          data-code="600505"
+          data-board="首板"
+          data-keywords="绿色电力|业绩增长|央企"
+          data-search="西昌电力 600505 14.34 4.9亿 13:56:05 首板 绿色电力+业绩增长+央企 1、据2025年年度报告，公司拥有完整的发、输、配、售电产业链，自有电源为水力发电和光伏发电，属于国家优先发展的清洁可再生能源，自有及并网装机56.887万千瓦。&lt;br&gt;2、据2025年年度报告及2026年第一季度经营数据公告，公司2025年归母净利润同比增长43.63%，2026年一季度发电量同比增长9.13%；影响2025年业绩的主因包括售电量同比增长5.96%、自有和控股电站发电量同比增长5.89%及有效压降非生产性开支。&lt;br&gt;3、据2025年年度报告及公司信息，公司控股股东为国网四川省电力公司，最终控制人为国务院国有资产监督管理委员会。">
+          <div class="detail-top">
+            <div>
+              <h3>西昌电力 <span class="stock-code">600505</span></h3>
+              <div class="detail-tags"><span>绿色电力</span><span>业绩增长</span><span>央企</span></div>
+            </div>
+            <span class="pill">13:56:05</span>
+          </div>
+          <div class="meta-grid"><div><label>当前股价</label><strong>14.34</strong></div><div><label>今日成交金额</label><strong>4.9亿</strong></div><div><label>最终涨停时间</label><strong>13:56:05</strong></div><div><label>连板天数</label><strong>首板</strong></div><div><label>涨停关键词</label><strong>绿色电力+业绩增长+央企</strong></div><div><label>股票代码</label><strong>600505</strong></div></div>
+          <div class="reason-body"><p>1、据2025年年度报告，公司拥有完整的发、输、配、售电产业链，自有电源为水力发电和光伏发电，属于国家优先发展的清洁可再生能源，自有及并网装机56.887万千瓦。</p><p>2、据2025年年度报告及2026年第一季度经营数据公告，公司2025年归母净利润同比增长43.63%，2026年一季度发电量同比增长9.13%；影响2025年业绩的主因包括售电量同比增长5.96%、自有和控股电站发电量同比增长5.89%及有效压降非生产性开支。</p><p>3、据2025年年度报告及公司信息，公司控股股东为国网四川省电力公司，最终控制人为国务院国有资产监督管理委员会。</p></div>
+        </article>
+
+        <article id="detail-600578" class="detail-card"
+          data-code="600578"
+          data-board="首板"
+          data-keywords="风光火储一体化|火电|北京国资"
+          data-search="京能电力 600578 9.34 30.05亿 13:15:54 首板 风光火储一体化+火电+北京国资 1、据2026年5月13日公告，公司乌兰察布京大1500MW“风光火储一体化”大型风电光伏基地项目获得核准，项目总装机150万千瓦，总投资87.41亿元。&lt;br&gt;2、据2026年5月26日异动公告及2025年年报，公司主营火力发电及供热，截至2025年末总装机容量2466.7万千瓦，其中火电装机2139万千瓦，是北京地区最大火电企业。&lt;br&gt;3、据2025年年报，公司最终控制人为北京市人民政府国有资产监督管理委员会，正转型综合能源服务商，布局“电热氢储”多能互补体系。">
+          <div class="detail-top">
+            <div>
+              <h3>京能电力 <span class="stock-code">600578</span></h3>
+              <div class="detail-tags"><span>风光火储一体化</span><span>火电</span><span>北京国资</span></div>
+            </div>
+            <span class="pill">13:15:54</span>
+          </div>
+          <div class="meta-grid"><div><label>当前股价</label><strong>9.34</strong></div><div><label>今日成交金额</label><strong>30.05亿</strong></div><div><label>最终涨停时间</label><strong>13:15:54</strong></div><div><label>连板天数</label><strong>首板</strong></div><div><label>涨停关键词</label><strong>风光火储一体化+火电+北京国资</strong></div><div><label>股票代码</label><strong>600578</strong></div></div>
+          <div class="reason-body"><p>1、据2026年5月13日公告，公司乌兰察布京大1500MW“风光火储一体化”大型风电光伏基地项目获得核准，项目总装机150万千瓦，总投资87.41亿元。</p><p>2、据2026年5月26日异动公告及2025年年报，公司主营火力发电及供热，截至2025年末总装机容量2466.7万千瓦，其中火电装机2139万千瓦，是北京地区最大火电企业。</p><p>3、据2025年年报，公司最终控制人为北京市人民政府国有资产监督管理委员会，正转型综合能源服务商，布局“电热氢储”多能互补体系。</p></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="source" aria-labelledby="source-title">
+      <div class="section-head">
+        <div>
+          <h2 id="source-title">原始 Markdown</h2>
+          <p>用于核对字段和行数。</p>
+        </div>
+      </div>
+      <details class="raw-box">
+        <summary>展开原文</summary>
+        <pre>| 股票名称及代码 | 当前股价 | 今日成交金额 | 最终涨停时间 | 连板天数 | 涨停关键词 | 涨停原因内容 |
+|---|---:|---:|---|---|---|---|
+| 豫能控股 001896 | 20.08 | 31.92亿 | 09:49:15 | 首板 | 参股算力+火电+河南国资 | 1、据2026年6月1日每日经济新闻，全国首个绿色算力全栈AI平台正式上线运行；据2026年6月1日财闻，电力板块走强缘于高温推进用电负荷、数据中心用电刚性扩张；据2026年3月21日公告，公司拟增资11亿元参股优天算力，持有其42.29%股权，间接参股从事超大规模数据中心业务的郑州合盈。&lt;br&gt;2、据2025年年度报告，公司是河南省集火力发电、新能源、抽水蓄能等于一体的省级资本控股综合能源上市公司，控股火电总装机7,660MW，600MW级高效机组占比超八成。&lt;br&gt;3、据2025年年度报告，公司控股股东为河南投资集团有限公司，实际控制人为河南省财政厅。 |
+| 湘潭电化 002125 | 16.65 | 7.67亿 | 10:03:57 | 首板 | 固态电池+锰酸锂+电解二氧化锰+湘潭国资 | 1、据2026年5月18日业绩说明会，公司控股子公司广西立劲新材料有限公司正与部分固态电池企业就锰酸锂应用于半固态/固态电池领域开展合作研发，已取得一定进展，预计在2026年底或2027年初有所突破。&lt;br&gt;2、据2025年年报，公司锰酸锂年产能4万吨，市场占有率居行业前列；电解二氧化锰为“国家制造业单项冠军产品”，市场占有率保持行业领先。&lt;br&gt;3、据2025年年度报告，公司实际控制人为湘潭市人民政府国有资产监督管理委员会。 |
+| 东方锆业 002167 | 14.73 | 11.27亿 | 10:40:36 | 首板 | 定增通过+固态电池+锆产品 | 1、据2026年6月2日公司公告，公司2026年第二次临时股东会审议通过了关于向特定对象发行A股股票预案的议案，拟募集资金11.70亿元用于电熔氧化锆及新能源电池级高纯复合氧化锆等项目。&lt;br&gt;2、据2026年4月21日年报及2026年4月27日业绩说明会，公司氧化锆粉末已作为添加剂应用于三元正极材料并供货头部电池企业；公司通过参股合肥固宁纪元及推进电池级高纯复合氧化锆产线建设，双重布局固态电池核心材料，相关氧化锆样品已获部分固态电池材料厂家研发试用初步认可。&lt;br&gt;3、据2026年4月21日年报，公司是国内锆行业技术领先、产业链完整的高新技术企业，产品涵盖氯氧化锆、二氧化锆、复合氧化锆、氧化锆陶瓷结构件等六大系列百余品种，已构建从锆英砂原料到高端锆制品深加工的垂直一体化全产业链。 |
+| 王子新材 002735 | 16.18 | 8.35亿 | 13:12:45 | 首板 | 薄膜电容+可控核聚变+富士康概念 | 1、据2026年6月1日互动易，公司控股子公司宁波新容生产的薄膜电容属于基础电子元器件，可广泛应用于多行业、多领域；据2026年4月30日投资者关系活动记录表，宁波新容已为可控核聚变领域提供储能电容和支撑电容产品，2026年将进一步优化产能布局。&lt;br&gt;2、据2026年4月22日2025年年度报告，公司重点布局薄膜电容在新能源汽车、光伏、风力发电、可控核聚变及军工等行业的应用；据2026年4月30日投资者关系活动记录表，2026年公司将主动抢抓国内外核聚变相关产业商机。&lt;br&gt;3、据2026年4月22日2025年年度报告，公司成立之初主营电子制造业配套包装，服务富士康等国际电子制造业巨头，迅速成为行业领先供应商，目前主营塑料包装、军工电子、薄膜电容三大业务。 |
+| 青山纸业 600103 | 4.07 | 11.14亿 | 10:40:11 | 首板 | 光模块+林浆纸+福建国资 | 1、据2026年4月14日2025年年度报告，子公司深圳恒宝通持续开展400G/800G光模块技术研究及高速光器件封装技术研究，重点布局高端光模块产品研发与生产；据2025年半年报，400G产品已进入小批量试产阶段，800G光模块已完成设计，进入样品试制阶段。&lt;br&gt;2、据2026年4月14日2025年年度报告，公司已形成“林-浆-纸”产业链协同效应，2025年新型包装纸销量在公司纸包装销量中占比突破三分之一，竹浆等自主供应能力持续提升。&lt;br&gt;3、公司最终控制人为福建省人民政府国有资产监督管理委员会，属于国有企业。 |
+| 瑞贝卡 600439 | 2.62 | 1.5亿 | 10:11:51 | 首板 | 跨境电商+发制品+业绩减亏 | 1、据2026年4月29日年报，公司跨境电商业务稳步发展，国际线上多渠道协同发力实现突破式增长，跨境独立站聚焦产品结构优化、转化效率提升和客单价拉升，销售业绩大幅增长，拉动了美洲市场收入增长。&lt;br&gt;2、据2026年4月29日年报，公司是国内发制品行业中生产规模和出口规模均领先的企业，主营假发饰品研产销，产品销往北美、非洲、欧洲等，拥有全球化研产销布局，系国家制造业“单项冠军企业”。&lt;br&gt;3、据2026年4月29日年报，公司2025年归母净利润-8190.02万元，亏损同比减少3571.90万元，主要得益于国内销售毛利率高于境外及跨境电商业务发展，盈利能力逐步改善。 |
+| 西昌电力 600505 | 14.34 | 4.9亿 | 13:56:05 | 首板 | 绿色电力+业绩增长+央企 | 1、据2025年年度报告，公司拥有完整的发、输、配、售电产业链，自有电源为水力发电和光伏发电，属于国家优先发展的清洁可再生能源，自有及并网装机56.887万千瓦。&lt;br&gt;2、据2025年年度报告及2026年第一季度经营数据公告，公司2025年归母净利润同比增长43.63%，2026年一季度发电量同比增长9.13%；影响2025年业绩的主因包括售电量同比增长5.96%、自有和控股电站发电量同比增长5.89%及有效压降非生产性开支。&lt;br&gt;3、据2025年年度报告及公司信息，公司控股股东为国网四川省电力公司，最终控制人为国务院国有资产监督管理委员会。 |
+| 京能电力 600578 | 9.34 | 30.05亿 | 13:15:54 | 首板 | 风光火储一体化+火电+北京国资 | 1、据2026年5月13日公告，公司乌兰察布京大1500MW“风光火储一体化”大型风电光伏基地项目获得核准，项目总装机150万千瓦，总投资87.41亿元。&lt;br&gt;2、据2026年5月26日异动公告及2025年年报，公司主营火力发电及供热，截至2025年末总装机容量2466.7万千瓦，其中火电装机2139万千瓦，是北京地区最大火电企业。&lt;br&gt;3、据2025年年报，公司最终控制人为北京市人民政府国有资产监督管理委员会，正转型综合能源服务商，布局“电热氢储”多能互补体系。 |
+</pre>
+      </details>
+    </section>
+  </main>
+
+  <button class="back-top" type="button" aria-label="返回顶部">↑</button>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script id="stock-data" type="application/json">[{"index": 1, "nameCode": "豫能控股 001896", "name": "豫能控股", "code": "001896", "price": "20.08", "priceValue": 20.08, "amount": "31.92亿", "amountYi": 31.92, "limitTime": "09:49:15", "timeSeconds": 35355, "board": "首板", "keywordText": "参股算力+火电+河南国资", "keywords": ["参股算力", "火电", "河南国资"], "reason": "1、据2026年6月1日每日经济新闻，全国首个绿色算力全栈AI平台正式上线运行；据2026年6月1日财闻，电力板块走强缘于高温推进用电负荷、数据中心用电刚性扩张；据2026年3月21日公告，公司拟增资11亿元参股优天算力，持有其42.29%股权，间接参股从事超大规模数据中心业务的郑州合盈。<br>2、据2025年年度报告，公司是河南省集火力发电、新能源、抽水蓄能等于一体的省级资本控股综合能源上市公司，控股火电总装机7,660MW，600MW级高效机组占比超八成。<br>3、据2025年年度报告，公司控股股东为河南投资集团有限公司，实际控制人为河南省财政厅。"}, {"index": 2, "nameCode": "湘潭电化 002125", "name": "湘潭电化", "code": "002125", "price": "16.65", "priceValue": 16.65, "amount": "7.67亿", "amountYi": 7.67, "limitTime": "10:03:57", "timeSeconds": 36237, "board": "首板", "keywordText": "固态电池+锰酸锂+电解二氧化锰+湘潭国资", "keywords": ["固态电池", "锰酸锂", "电解二氧化锰", "湘潭国资"], "reason": "1、据2026年5月18日业绩说明会，公司控股子公司广西立劲新材料有限公司正与部分固态电池企业就锰酸锂应用于半固态/固态电池领域开展合作研发，已取得一定进展，预计在2026年底或2027年初有所突破。<br>2、据2025年年报，公司锰酸锂年产能4万吨，市场占有率居行业前列；电解二氧化锰为“国家制造业单项冠军产品”，市场占有率保持行业领先。<br>3、据2025年年度报告，公司实际控制人为湘潭市人民政府国有资产监督管理委员会。"}, {"index": 3, "nameCode": "东方锆业 002167", "name": "东方锆业", "code": "002167", "price": "14.73", "priceValue": 14.73, "amount": "11.27亿", "amountYi": 11.27, "limitTime": "10:40:36", "timeSeconds": 38436, "board": "首板", "keywordText": "定增通过+固态电池+锆产品", "keywords": ["定增通过", "固态电池", "锆产品"], "reason": "1、据2026年6月2日公司公告，公司2026年第二次临时股东会审议通过了关于向特定对象发行A股股票预案的议案，拟募集资金11.70亿元用于电熔氧化锆及新能源电池级高纯复合氧化锆等项目。<br>2、据2026年4月21日年报及2026年4月27日业绩说明会，公司氧化锆粉末已作为添加剂应用于三元正极材料并供货头部电池企业；公司通过参股合肥固宁纪元及推进电池级高纯复合氧化锆产线建设，双重布局固态电池核心材料，相关氧化锆样品已获部分固态电池材料厂家研发试用初步认可。<br>3、据2026年4月21日年报，公司是国内锆行业技术领先、产业链完整的高新技术企业，产品涵盖氯氧化锆、二氧化锆、复合氧化锆、氧化锆陶瓷结构件等六大系列百余品种，已构建从锆英砂原料到高端锆制品深加工的垂直一体化全产业链。"}, {"index": 4, "nameCode": "王子新材 002735", "name": "王子新材", "code": "002735", "price": "16.18", "priceValue": 16.18, "amount": "8.35亿", "amountYi": 8.35, "limitTime": "13:12:45", "timeSeconds": 47565, "board": "首板", "keywordText": "薄膜电容+可控核聚变+富士康概念", "keywords": ["薄膜电容", "可控核聚变", "富士康概念"], "reason": "1、据2026年6月1日互动易，公司控股子公司宁波新容生产的薄膜电容属于基础电子元器件，可广泛应用于多行业、多领域；据2026年4月30日投资者关系活动记录表，宁波新容已为可控核聚变领域提供储能电容和支撑电容产品，2026年将进一步优化产能布局。<br>2、据2026年4月22日2025年年度报告，公司重点布局薄膜电容在新能源汽车、光伏、风力发电、可控核聚变及军工等行业的应用；据2026年4月30日投资者关系活动记录表，2026年公司将主动抢抓国内外核聚变相关产业商机。<br>3、据2026年4月22日2025年年度报告，公司成立之初主营电子制造业配套包装，服务富士康等国际电子制造业巨头，迅速成为行业领先供应商，目前主营塑料包装、军工电子、薄膜电容三大业务。"}, {"index": 5, "nameCode": "青山纸业 600103", "name": "青山纸业", "code": "600103", "price": "4.07", "priceValue": 4.07, "amount": "11.14亿", "amountYi": 11.14, "limitTime": "10:40:11", "timeSeconds": 38411, "board": "首板", "keywordText": "光模块+林浆纸+福建国资", "keywords": ["光模块", "林浆纸", "福建国资"], "reason": "1、据2026年4月14日2025年年度报告，子公司深圳恒宝通持续开展400G/800G光模块技术研究及高速光器件封装技术研究，重点布局高端光模块产品研发与生产；据2025年半年报，400G产品已进入小批量试产阶段，800G光模块已完成设计，进入样品试制阶段。<br>2、据2026年4月14日2025年年度报告，公司已形成“林-浆-纸”产业链协同效应，2025年新型包装纸销量在公司纸包装销量中占比突破三分之一，竹浆等自主供应能力持续提升。<br>3、公司最终控制人为福建省人民政府国有资产监督管理委员会，属于国有企业。"}, {"index": 6, "nameCode": "瑞贝卡 600439", "name": "瑞贝卡", "code": "600439", "price": "2.62", "priceValue": 2.62, "amount": "1.5亿", "amountYi": 1.5, "limitTime": "10:11:51", "timeSeconds": 36711, "board": "首板", "keywordText": "跨境电商+发制品+业绩减亏", "keywords": ["跨境电商", "发制品", "业绩减亏"], "reason": "1、据2026年4月29日年报，公司跨境电商业务稳步发展，国际线上多渠道协同发力实现突破式增长，跨境独立站聚焦产品结构优化、转化效率提升和客单价拉升，销售业绩大幅增长，拉动了美洲市场收入增长。<br>2、据2026年4月29日年报，公司是国内发制品行业中生产规模和出口规模均领先的企业，主营假发饰品研产销，产品销往北美、非洲、欧洲等，拥有全球化研产销布局，系国家制造业“单项冠军企业”。<br>3、据2026年4月29日年报，公司2025年归母净利润-8190.02万元，亏损同比减少3571.90万元，主要得益于国内销售毛利率高于境外及跨境电商业务发展，盈利能力逐步改善。"}, {"index": 7, "nameCode": "西昌电力 600505", "name": "西昌电力", "code": "600505", "price": "14.34", "priceValue": 14.34, "amount": "4.9亿", "amountYi": 4.9, "limitTime": "13:56:05", "timeSeconds": 50165, "board": "首板", "keywordText": "绿色电力+业绩增长+央企", "keywords": ["绿色电力", "业绩增长", "央企"], "reason": "1、据2025年年度报告，公司拥有完整的发、输、配、售电产业链，自有电源为水力发电和光伏发电，属于国家优先发展的清洁可再生能源，自有及并网装机56.887万千瓦。<br>2、据2025年年度报告及2026年第一季度经营数据公告，公司2025年归母净利润同比增长43.63%，2026年一季度发电量同比增长9.13%；影响2025年业绩的主因包括售电量同比增长5.96%、自有和控股电站发电量同比增长5.89%及有效压降非生产性开支。<br>3、据2025年年度报告及公司信息，公司控股股东为国网四川省电力公司，最终控制人为国务院国有资产监督管理委员会。"}, {"index": 8, "nameCode": "京能电力 600578", "name": "京能电力", "code": "600578", "price": "9.34", "priceValue": 9.34, "amount": "30.05亿", "amountYi": 30.05, "limitTime": "13:15:54", "timeSeconds": 47754, "board": "首板", "keywordText": "风光火储一体化+火电+北京国资", "keywords": ["风光火储一体化", "火电", "北京国资"], "reason": "1、据2026年5月13日公告，公司乌兰察布京大1500MW“风光火储一体化”大型风电光伏基地项目获得核准，项目总装机150万千瓦，总投资87.41亿元。<br>2、据2026年5月26日异动公告及2025年年报，公司主营火力发电及供热，截至2025年末总装机容量2466.7万千瓦，其中火电装机2139万千瓦，是北京地区最大火电企业。<br>3、据2025年年报，公司最终控制人为北京市人民政府国有资产监督管理委员会，正转型综合能源服务商，布局“电热氢储”多能互补体系。"}]</script>
+  <script>
+    (() => {
+      const stocks = JSON.parse(document.getElementById("stock-data").textContent);
+      const searchInput = document.getElementById("searchInput");
+      const visibleCount = document.getElementById("visibleCount");
+      const tableBody = document.getElementById("stockTableBody");
+      const rows = Array.from(document.querySelectorAll(".stock-row"));
+      const mobileCards = Array.from(document.querySelectorAll(".mobile-card"));
+      const detailCards = Array.from(document.querySelectorAll(".detail-card"));
+      const timelineItems = Array.from(document.querySelectorAll(".timeline-item"));
+      const boardButtons = Array.from(document.querySelectorAll("[data-board]"));
+      const keywordButtons = Array.from(document.querySelectorAll("[data-keyword]"));
+      const toast = document.getElementById("toast");
+      let activeBoard = "all";
+      let activeKeyword = "all";
+      let sortState = { key: "", direction: 1 };
+
+      const normalize = (value) => String(value || "").toLocaleLowerCase("zh-CN");
+
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add("show");
+        window.clearTimeout(showToast.timer);
+        showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 1800);
+      }
+
+      function matchesElement(element, query) {
+        const search = normalize(element.dataset.search);
+        const board = element.dataset.board;
+        const keywords = element.dataset.keywords || "";
+        return (!query || search.includes(query)) &&
+          (activeBoard === "all" || board === activeBoard) &&
+          (activeKeyword === "all" || keywords.split("|").includes(activeKeyword));
+      }
+
+      function applyFilters() {
+        const query = normalize(searchInput.value.trim());
+        let count = 0;
+        rows.forEach((row) => {
+          const ok = matchesElement(row, query);
+          row.hidden = !ok;
+          if (ok) count += 1;
+        });
+        mobileCards.forEach((card) => card.hidden = !matchesElement(card, query));
+        detailCards.forEach((card) => card.hidden = !matchesElement(card, query));
+        timelineItems.forEach((item) => item.hidden = !matchesElement(item, query));
+        visibleCount.textContent = count;
+      }
+
+      boardButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          activeBoard = button.dataset.board;
+          boardButtons.forEach((item) => item.classList.toggle("active", item === button));
+          applyFilters();
+        });
+      });
+
+      keywordButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          activeKeyword = button.dataset.keyword;
+          keywordButtons.forEach((item) => item.classList.toggle("active", item === button));
+          applyFilters();
+        });
+      });
+
+      searchInput.addEventListener("input", applyFilters);
+
+      document.getElementById("resetFilters").addEventListener("click", () => {
+        searchInput.value = "";
+        activeBoard = "all";
+        activeKeyword = "all";
+        boardButtons.forEach((button) => button.classList.toggle("active", button.dataset.board === "all"));
+        keywordButtons.forEach((button) => button.classList.toggle("active", button.dataset.keyword === "all"));
+        applyFilters();
+      });
+
+      document.querySelectorAll("th.sortable").forEach((th) => {
+        th.addEventListener("click", () => {
+          const key = th.dataset.sort;
+          sortState.direction = sortState.key === key ? -sortState.direction : 1;
+          sortState.key = key;
+          const sorted = [...rows].sort((a, b) => {
+            const av = a.dataset[key] || "";
+            const bv = b.dataset[key] || "";
+            const an = Number(av);
+            const bn = Number(bv);
+            if (!Number.isNaN(an) && !Number.isNaN(bn)) return (an - bn) * sortState.direction;
+            return av.localeCompare(bv, "zh-CN") * sortState.direction;
+          });
+          sorted.forEach((row) => tableBody.appendChild(row));
+        });
+      });
+
+      document.getElementById("copyVisible").addEventListener("click", async () => {
+        const visibleCodes = new Set(rows.filter((row) => !row.hidden).map((row) => row.dataset.code));
+        const header = ["股票名称及代码", "当前股价", "今日成交金额", "最终涨停时间", "连板天数", "涨停关键词", "涨停原因内容"];
+        const lines = [header.join("\t")];
+        stocks
+          .filter((stock) => visibleCodes.has(stock.code))
+          .forEach((stock) => lines.push([
+            stock.nameCode,
+            stock.price,
+            stock.amount,
+            stock.limitTime,
+            stock.board,
+            stock.keywordText,
+            String(stock.reason).replace(/<br\s*\/?>(?=\s*\d、|\s*$)/gi, " / ")
+          ].join("\t")));
+        const text = lines.join("\n");
+        try {
+          await navigator.clipboard.writeText(text);
+          showToast(`已复制 ${visibleCodes.size} 行`);
+        } catch (error) {
+          const area = document.createElement("textarea");
+          area.value = text;
+          document.body.appendChild(area);
+          area.select();
+          document.execCommand("copy");
+          area.remove();
+          showToast(`已复制 ${visibleCodes.size} 行`);
+        }
+      });
+
+      document.querySelector(".back-top").addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      applyFilters();
+    })();
+  </script>
+</body>
+</html>
