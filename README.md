@@ -1,2 +1,2 @@
-# my-html-site
-My first HTML website hosted with GitHub Pages
+# laofan-stock-review
+Based on the user-provided pool of A-share stocks that hit their first limit-up on Day T, use public information and strict evidence cut-offs to research which candidates are most likely to achieve a second consecutive limit-up on T+1. Output the Top 2 research candidates, K1–K6 audits, Final verdict, Confidence, Star rating, Veto status, and Reason for elimination; no trading advice, position recommendations, profit guarantees, or deterministic predictions are provided.
