@@ -1,0 +1,1545 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>26-06-04 首板涨停全景识别</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fa;
+      --surface: #ffffff;
+      --surface-soft: #f9fafc;
+      --ink: #111827;
+      --muted: #667085;
+      --faint: #98a2b3;
+      --line: #e4e7ec;
+      --line-strong: #d0d5dd;
+      --accent: #0b63ce;
+      --accent-soft: #e8f1ff;
+      --green: #067647;
+      --green-soft: #e7f6ee;
+      --gold: #b54708;
+      --gold-soft: #fff4e5;
+      --shadow: 0 18px 48px rgba(17, 24, 39, .08);
+      --radius: 8px;
+      --max: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.65;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: saturate(180%) blur(18px);
+      background: rgba(255, 255, 255, .86);
+      border-bottom: 1px solid rgba(228, 231, 236, .9);
+    }
+
+    .nav {
+      max-width: var(--max);
+      margin: 0 auto;
+      min-height: 58px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      white-space: nowrap;
+    }
+
+    .brand strong {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .brand span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .nav-links::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .nav-links a:hover,
+    .nav-links a:focus-visible {
+      color: var(--ink);
+      background: var(--surface-soft);
+      outline: none;
+    }
+
+    .hero {
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 74px 24px 54px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.12fr) minmax(280px, .88fr);
+      gap: 42px;
+      align-items: end;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      margin: 0 0 14px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 64px;
+      line-height: 1.03;
+      letter-spacing: 0;
+      max-width: 780px;
+    }
+
+    .hero p {
+      margin: 20px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+      max-width: 760px;
+    }
+
+    .hero-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .hero-panel h2 {
+      margin: 0 0 14px;
+      font-size: 16px;
+    }
+
+    .keyline {
+      display: grid;
+      gap: 12px;
+    }
+
+    .keyline-item {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 12px;
+      align-items: baseline;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .keyline-item:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .keyline-item span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .keyline-item strong {
+      font-size: 15px;
+      font-weight: 650;
+    }
+
+    main {
+      display: grid;
+      gap: 0;
+    }
+
+    .band {
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .band.alt {
+      background: var(--bg);
+    }
+
+    .section {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 52px 24px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: end;
+      margin-bottom: 22px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      max-width: 680px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+      min-height: 132px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 10px;
+      font-size: 34px;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .metric small {
+      margin-top: 14px;
+      color: var(--faint);
+      font-size: 12px;
+    }
+
+    .tool-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: minmax(240px, 1fr) 180px auto auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .field {
+      position: relative;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: #fff;
+      color: var(--ink);
+      padding: 10px 12px;
+      outline: none;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(11, 99, 206, .12);
+    }
+
+    .button {
+      border: 1px solid var(--line-strong);
+      background: var(--surface);
+      color: var(--ink);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      min-height: 44px;
+      transition: background .18s ease, border-color .18s ease, transform .18s ease;
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      background: var(--surface-soft);
+      border-color: #b9c0cc;
+      outline: none;
+    }
+
+    .button:active {
+      transform: translateY(1px);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      line-height: 1;
+      transition: background .18s ease, color .18s ease, border-color .18s ease;
+    }
+
+    .chip:hover,
+    .chip:focus-visible,
+    .chip.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: rgba(11, 99, 206, .28);
+      outline: none;
+    }
+
+    .table-shell {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      min-width: 920px;
+    }
+
+    th,
+    td {
+      text-align: left;
+      vertical-align: top;
+      padding: 14px 14px;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    th {
+      background: #f9fafc;
+      color: #475467;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    th button {
+      border: 0;
+      background: transparent;
+      padding: 0;
+      color: inherit;
+      font-weight: inherit;
+      display: inline-flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    tbody tr {
+      transition: background .16s ease;
+    }
+
+    tbody tr:hover {
+      background: #fbfcff;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .stock-name {
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .code {
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      margin-left: 4px;
+    }
+
+    .price,
+    .amount,
+    .time {
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .board {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--green);
+      background: var(--green-soft);
+      border-radius: 999px;
+      min-width: 48px;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .keyword-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-width: 220px;
+    }
+
+    .keyword {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 3px 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      line-height: 1.5;
+      white-space: nowrap;
+    }
+
+    .stock-matrix th:nth-child(1),
+    .stock-matrix td:nth-child(1) {
+      width: 15%;
+    }
+
+    .stock-matrix th:nth-child(2),
+    .stock-matrix td:nth-child(2),
+    .stock-matrix th:nth-child(3),
+    .stock-matrix td:nth-child(3),
+    .stock-matrix th:nth-child(4),
+    .stock-matrix td:nth-child(4),
+    .stock-matrix th:nth-child(5),
+    .stock-matrix td:nth-child(5) {
+      width: 11%;
+    }
+
+    .stock-matrix th:nth-child(6),
+    .stock-matrix td:nth-child(6) {
+      width: 31%;
+    }
+
+    .stock-matrix th:nth-child(7),
+    .stock-matrix td:nth-child(7) {
+      width: 10%;
+    }
+
+    .reason-toggle {
+      border: 1px solid rgba(11, 99, 206, .22);
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .reason-toggle:hover,
+    .reason-toggle:focus-visible {
+      border-color: rgba(11, 99, 206, .42);
+      outline: none;
+    }
+
+    .reason-row[hidden] {
+      display: none !important;
+    }
+
+    .reason-row td {
+      background: #fbfcff;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .reason-cell {
+      padding: 0 14px 18px;
+    }
+
+    .table-reason {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 16px 18px;
+      color: #344054;
+    }
+
+    .table-reason h4 {
+      margin: 0 0 10px;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .table-reason p {
+      margin: 10px 0 0;
+    }
+
+    .table-reason p:first-of-type {
+      margin-top: 0;
+    }
+
+    .empty-state {
+      display: none;
+      padding: 26px;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--surface-soft);
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    details.detail-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: 0 10px 24px rgba(17, 24, 39, .04);
+      overflow: hidden;
+    }
+
+    details.detail-card[open] {
+      border-color: rgba(11, 99, 206, .26);
+    }
+
+    summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 18px 18px 16px;
+      display: grid;
+      gap: 8px;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: baseline;
+    }
+
+    .summary-row strong {
+      font-size: 18px;
+    }
+
+    .summary-row span {
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .detail-body {
+      padding: 0 18px 18px;
+      color: #344054;
+    }
+
+    .detail-body p {
+      margin: 10px 0 0;
+    }
+
+    .detail-body p:first-child {
+      margin-top: 0;
+    }
+
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(280px, .9fr);
+      gap: 18px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 20px;
+    }
+
+    .panel h3 {
+      margin: 0 0 14px;
+      font-size: 17px;
+    }
+
+    .bar-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .bar {
+      display: grid;
+      grid-template-columns: 120px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .bar-label {
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .track {
+      height: 8px;
+      border-radius: 999px;
+      background: #eef2f7;
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      border-radius: inherit;
+      background: var(--accent);
+    }
+
+    .bar-value {
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 10px;
+    }
+
+    .time-item {
+      display: grid;
+      grid-template-columns: 88px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 10px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .time-item:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .time-item time {
+      color: var(--accent);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .time-item strong {
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .time-item span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .source-note {
+      color: var(--muted);
+      font-size: 13px;
+      border-left: 3px solid var(--accent);
+      padding-left: 12px;
+      margin: 0;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%) translateY(12px);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: rgba(17, 24, 39, .92);
+      color: #fff;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+      z-index: 30;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .back-top {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      background: rgba(255, 255, 255, .92);
+      color: var(--ink);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 12px 30px rgba(17, 24, 39, .12);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+      z-index: 25;
+    }
+
+    .back-top.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .back-top:hover {
+      transform: translateY(-2px);
+    }
+
+    mark {
+      background: #fff2b8;
+      color: inherit;
+      border-radius: 3px;
+      padding: 0 .12em;
+    }
+
+    @media (max-width: 980px) {
+      .hero-inner,
+      .analysis-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .controls {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+        padding: 10px 16px;
+      }
+
+      .brand {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .hero-inner {
+        padding: 48px 18px 40px;
+      }
+
+      h1 {
+        font-size: 40px;
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      .section {
+        padding: 40px 18px;
+      }
+
+      .section-head {
+        display: block;
+      }
+
+      .summary-grid,
+      .controls {
+        grid-template-columns: 1fr;
+      }
+
+      .table-shell {
+        border: 0;
+        background: transparent;
+        overflow: visible;
+      }
+
+      table,
+      thead,
+      tbody,
+      tr,
+      th,
+      td {
+        display: block;
+        min-width: 0;
+        width: 100%;
+      }
+
+      thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+      }
+
+      tr {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        margin-bottom: 12px;
+        overflow: hidden;
+      }
+
+      td {
+        display: grid;
+        grid-template-columns: 108px 1fr;
+        gap: 12px;
+        border-bottom: 1px solid var(--line);
+        padding: 12px;
+      }
+
+      td::before {
+        content: attr(data-label);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      td:last-child {
+        border-bottom: 0;
+      }
+
+      .reason-row {
+        margin-top: -12px;
+        border-top: 0;
+      }
+
+      .reason-cell {
+        display: block;
+        padding: 0;
+      }
+
+      .reason-cell::before {
+        content: none;
+      }
+
+      .table-reason {
+        border: 0;
+        border-top: 1px solid var(--line);
+        border-radius: 0;
+        padding: 14px 12px 16px;
+      }
+
+      .bar {
+        grid-template-columns: 92px 1fr auto;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+        color: #000;
+      }
+
+      .site-header,
+      .tool-panel,
+      .back-top,
+      .toast {
+        display: none !important;
+      }
+
+      .hero,
+      .band,
+      .band.alt {
+        background: #fff;
+        border-bottom: 1px solid #bbb;
+      }
+
+      .hero-inner,
+      .section {
+        max-width: none;
+        padding: 24px 0;
+      }
+
+      .hero-panel,
+      .metric,
+      .panel,
+      details.detail-card,
+      .table-shell {
+        box-shadow: none;
+        border-color: #bbb;
+      }
+
+      details.detail-card {
+        break-inside: avoid;
+      }
+
+      details.detail-card:not([open]) .detail-body {
+        display: block;
+      }
+
+      summary {
+        cursor: default;
+      }
+
+      th {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav" aria-label="页面导航">
+      <div class="brand">
+        <strong>全景识别</strong>
+        <span>2026-06-04</span>
+      </div>
+      <div class="nav-links">
+        <a href="#overview">概览</a>
+        <a href="#matrix">主表</a>
+        <a href="#details">详情</a>
+        <a href="#signals">线索</a>
+        <a href="#source">来源</a>
+      </div>
+    </nav>
+  </header>
+
+  <section class="hero" id="top">
+    <div class="hero-inner">
+      <div>
+        <p class="eyebrow">Panorama Recognition</p>
+        <h1>26-06-04 首板涨停标的全景</h1>
+        <p>基于《26-06-04 全景识别前置.md》固定 7 字段表格生成，完整保留股票名称及代码、股价、成交金额、最终涨停时间、连板天数、关键词和涨停原因内容。</p>
+      </div>
+      <aside class="hero-panel" aria-label="关键边界">
+        <h2>读取边界</h2>
+        <div class="keyline">
+          <div class="keyline-item">
+            <span>数据范围</span>
+            <strong>6 条首板标的，全部来自原文表格</strong>
+          </div>
+          <div class="keyline-item">
+            <span>时间跨度</span>
+            <strong>09:54:09 至 13:14:51</strong>
+          </div>
+          <div class="keyline-item">
+            <span>内容处理</span>
+            <strong>不联网补全，不改写原因，不新增字段</strong>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <main>
+    <section class="band alt" id="overview">
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <h2>一屏摘要</h2>
+            <p>概览项仅按 Markdown 原文直接解析和计算，用于快速定位数量、资金、关键词与时间分布。</p>
+          </div>
+        </div>
+        <div class="summary-grid" aria-label="概览指标">
+          <article class="metric">
+            <span>标的数量</span>
+            <strong id="metricCount">6</strong>
+            <small>固定表格完整解析</small>
+          </article>
+          <article class="metric">
+            <span>今日成交金额合计</span>
+            <strong id="metricAmount">34.97亿</strong>
+            <small>按原文“亿”口径相加</small>
+          </article>
+          <article class="metric">
+            <span>关键词数量</span>
+            <strong id="metricKeywords">20</strong>
+            <small>以“+”拆分后去重</small>
+          </article>
+          <article class="metric">
+            <span>连板分布</span>
+            <strong id="metricBoard">首板 6</strong>
+            <small>原文字段全部为首板</small>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="matrix">
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <h2>主数据视图</h2>
+            <p>支持搜索、关键词筛选和列排序。主表保留短字段用于横向扫描，涨停原因内容通过每行展开区和下方详情区完整呈现。</p>
+          </div>
+          <p class="source-note" id="resultNote">当前显示 6 / 6 条</p>
+        </div>
+
+        <div class="tool-panel" aria-label="筛选工具">
+          <div class="controls">
+            <label class="field">
+              <span class="visually-hidden">搜索</span>
+              <input id="searchBox" type="search" placeholder="搜索股票、代码、关键词或原因内容" autocomplete="off">
+            </label>
+            <label class="field">
+              <span class="visually-hidden">连板筛选</span>
+              <select id="boardFilter">
+                <option value="">全部连板</option>
+                <option value="首板">首板</option>
+              </select>
+            </label>
+            <button class="button" id="copyVisible" type="button">复制当前结果</button>
+            <button class="button" id="resetFilters" type="button">重置</button>
+          </div>
+          <div class="chips" id="keywordChips" aria-label="关键词筛选"></div>
+        </div>
+
+        <div class="table-shell" aria-label="股票数据表">
+          <table class="stock-matrix">
+            <thead>
+              <tr>
+                <th><button type="button" data-sort="stock">股票名称及代码 <span aria-hidden="true">↕</span></button></th>
+                <th><button type="button" data-sort="price">当前股价 <span aria-hidden="true">↕</span></button></th>
+                <th><button type="button" data-sort="amount">今日成交金额 <span aria-hidden="true">↕</span></button></th>
+                <th><button type="button" data-sort="time">最终涨停时间 <span aria-hidden="true">↕</span></button></th>
+                <th><button type="button" data-sort="board">连板天数 <span aria-hidden="true">↕</span></button></th>
+                <th>涨停关键词</th>
+                <th>全文</th>
+              </tr>
+            </thead>
+            <tbody id="stockTable"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="emptyState">未匹配到结果。请调整搜索词或筛选条件。</div>
+      </div>
+    </section>
+
+    <section class="band alt" id="details">
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <h2>涨停原因全文</h2>
+            <p>每条原因按原文序号拆分展示，保留公告日期、金额、比例、业务描述、控股股东和最终控制人等细节。</p>
+          </div>
+        </div>
+        <div class="detail-grid" id="detailGrid"></div>
+      </div>
+    </section>
+
+    <section class="band" id="signals">
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <h2>关键词与时间线索</h2>
+            <p>把原文关键词拆成可扫描标签，并按最终涨停时间排列，帮助回看当天首板出现节奏。</p>
+          </div>
+        </div>
+        <div class="analysis-grid">
+          <article class="panel">
+            <h3>成交金额排序</h3>
+            <div class="bar-list" id="amountBars"></div>
+          </article>
+          <article class="panel">
+            <h3>最终涨停时间轴</h3>
+            <div class="timeline" id="timeLine"></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band alt" id="source">
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <h2>原文审计</h2>
+            <p>本页从 Markdown 表格生成，未引用远程脚本、远程字体、外部图片或行情数据库。</p>
+          </div>
+        </div>
+        <article class="panel">
+          <h3>固定 7 字段</h3>
+          <p class="source-note">股票名称及代码｜当前股价｜今日成交金额｜最终涨停时间｜连板天数｜涨停关键词｜涨停原因内容</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <button class="back-top" id="backTop" type="button" aria-label="返回顶部">↑</button>
+  <div class="toast" id="toast" role="status" aria-live="polite">已复制</div>
+
+  <script>
+    const stocks = [
+      {
+        stock: "盈方微 000670",
+        name: "盈方微",
+        code: "000670",
+        price: "9.67",
+        priceValue: 9.67,
+        amount: "9.29亿",
+        amountValue: 9.29,
+        time: "09:54:09",
+        board: "首板",
+        keywords: ["长江存储代理", "半导体分销", "重大资产重组"],
+        reason: [
+          "1、据2026年3月31日年报，公司依托2024年底获取的长江存储代理权，重点加大存储芯片供应体量，推动分销业务全年收入增长16.17%，综合类芯片和存储芯片已成为分销业务营收增长的重要驱动力；据2026年5月27日互动易，公司确认已取得长江存储的代理资质。",
+          "2、据2026年5月27日异常波动公告及2026年5月9日进展公告，公司拟通过发行股份及支付现金方式取得上海岱安和信息科技股份有限公司、富士德中国有限公司100%股份并募集配套资金，目前重组正在有序推进中。",
+          "3、据2026年4月15日机构调研，公司分销业务持续深化与思特威、汇顶科技等核心供应商的战略协同，客户结构保持较高稳定，包括小米、丘钛、立讯精密等头部智能手机厂商及ODM方案商。"
+        ]
+      },
+      {
+        stock: "凯瑞德 002072",
+        name: "凯瑞德",
+        code: "002072",
+        price: "8.99",
+        priceValue: 8.99,
+        amount: "3亿",
+        amountValue: 3,
+        time: "13:14:51",
+        board: "首板",
+        keywords: ["煤炭贸易", "司法拍卖", "并购重组预期"],
+        reason: [
+          "1、据2025年年度报告，公司主营煤炭贸易自营业务，已构建稳定的供应商网络和客户群体，货源渠道多样化。公司发展战略是在持续做好煤炭贸易业务的基础上不断做大做强，并积极寻求优质资产注入；2026年经营计划包括做大做强煤炭贸易业务，实现业务规模和利润的双向增长。",
+          "2、据2026年5月19日公告，公司控股股东王健所持9.37%股份将于2026年6月4日10时至6月5日10时在京东司法拍卖平台被第二次司法拍卖。",
+          "3、据2026年3月6日投资者关系活动记录表，公司在持续做大做强现有煤炭贸易业务的基础上，挖掘新的业务及利润增长点，努力实现业务转型，以进一步改善公司的资产质量和盈利能力。同时，公司是否进行资产收购等相关重大事项请以公司公告为准。"
+        ]
+      },
+      {
+        stock: "日发精机 002520",
+        name: "日发精机",
+        code: "002520",
+        price: "6.26",
+        priceValue: 6.26,
+        amount: "3.19亿",
+        amountValue: 3.19,
+        time: "10:57:00",
+        board: "首板",
+        keywords: ["人形机器人", "数控螺纹磨床", "高端机床", "一季报扭亏"],
+        reason: [
+          "1、据2026年5月29日投资者关系活动记录表，公司SK76系列数控内螺纹磨床适用于人形机器人行星滚柱丝杠副的精密加工，已与贝斯特、五洲新春、三联锻造、领益智造等客户签署合同或达成战略合作，目前正积极开拓市场。",
+          "2、据2025年年度报告，公司定位于高端数控机床，拥有电主轴、转台等核心零部件自主开发能力，产品广泛应用于航空航天、汽车、工程机械等行业，是中国机床行业数控机床产值十佳企业。",
+          "3、据2026年4月29日披露的一季报，公司一季度归母净利润3382.27万元，同比扭亏为盈，主要系剥离海外亏损业务及出售部分资产产生收益所致。"
+        ]
+      },
+      {
+        stock: "三峡新材 600293",
+        name: "三峡新材",
+        code: "600293",
+        price: "3.6",
+        priceValue: 3.6,
+        amount: "2.74亿",
+        amountValue: 2.74,
+        time: "10:16:54",
+        board: "首板",
+        keywords: ["电子玻璃", "高端玻璃转型", "硅材料基地", "宜昌国资"],
+        reason: [
+          "1、据2026年4月24日年报，公司正加速向汽车玻璃、电子玻璃等高附加值领域拓展，推进相关项目建设；成功开发欧洲灰、福特蓝等色玻新型产品，有效拓展第二增长点；据2026年5月22日互动易，公司将于5月25日召开业绩说明会，并已制定“提质增效重回报”行动方案。",
+          "2、据2026年3月31日公告，公司拟投资不超过3亿元建设三峡新材硅材料基地项目，填补优质石英砂矿需求缺口，大幅提升原料自给率，降低原材料采购及外调物流成本；据2026年4月24日年报，公司拥有自有硅砂矿，形成“自有矿源保供为主、周边资源灵活调节为辅”的稳定供应体系。",
+          "3、据2026年4月24日年报，公司最终控制人为宜昌市人民政府国有资产监督管理委员会，属于国有企业；公司主营业务为平板玻璃及特种功能玻璃的生产和销售，产品覆盖浮法玻璃、Low-E玻璃、钢化玻璃等。"
+        ]
+      },
+      {
+        stock: "安泰集团 600408",
+        name: "安泰集团",
+        code: "600408",
+        price: "3.47",
+        priceValue: 3.47,
+        amount: "5.08亿",
+        amountValue: 5.08,
+        time: "10:50:34",
+        board: "首板",
+        keywords: ["焦炭", "型钢", "碳减排"],
+        reason: [
+          "1、据2026年4月25日年报，公司主营业务为型钢及焦炭，型钢产品占主营业务收入77.09%，拥有120万吨大型H型钢生产线，型钢产品已通过韩标、欧标认证。",
+          "2、据2026年4月25日年报，公司2025年焦炭业务已全面转为受托加工模式，全年加工量约192.93万吨，有效平滑价格波动风险。",
+          "3、据2026年4月25日年报，公司成功入选“山西省焦炭产品碳足迹管理体系试点单位”，焦化工序达到国家能效标杆水平，碳排强度持续下降。"
+        ]
+      },
+      {
+        stock: "梅雁吉祥 600868",
+        name: "梅雁吉祥",
+        code: "600868",
+        price: "3.78",
+        priceValue: 3.78,
+        amount: "11.67亿",
+        amountValue: 11.67,
+        time: "11:28:38",
+        board: "首板",
+        keywords: ["锑银矿", "水电", "一季报营收增长"],
+        reason: [
+          "1、据2026年5月29日投资者关系活动记录表，公司全资子公司梅雁矿业拥有的嵩溪锑银矿已取得储量核实报告并获得国家自然资源部评审备案通过，目前正推进采矿权变更手续相关前期工作；据2026年4月3日年报，公司将围绕矿产资源利用、开采、寻求合作等制订可行性方案。",
+          "2、据2026年5月29日投资者关系活动记录表，公司立足梅州当地水利资源，旗下水电站总装机容量约15万千瓦，将持续保障水电业务安全、稳定运营，夯实核心业务作用。",
+          "3、据2026年4月30日公告，公司2026年第一季度实现营业收入7120.42万元，同比增长93.58%，主要系并购BPO公司纳入合并报表范围所致。"
+        ]
+      }
+    ];
+
+    const state = {
+      query: "",
+      board: "",
+      keyword: "",
+      sortKey: "time",
+      sortDirection: "asc"
+    };
+
+    const els = {
+      table: document.querySelector("#stockTable"),
+      detailGrid: document.querySelector("#detailGrid"),
+      keywordChips: document.querySelector("#keywordChips"),
+      search: document.querySelector("#searchBox"),
+      boardFilter: document.querySelector("#boardFilter"),
+      reset: document.querySelector("#resetFilters"),
+      copy: document.querySelector("#copyVisible"),
+      resultNote: document.querySelector("#resultNote"),
+      empty: document.querySelector("#emptyState"),
+      amountBars: document.querySelector("#amountBars"),
+      timeLine: document.querySelector("#timeLine"),
+      toast: document.querySelector("#toast"),
+      backTop: document.querySelector("#backTop")
+    };
+
+    const uniqueKeywords = [...new Set(stocks.flatMap(item => item.keywords))];
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function highlight(value) {
+      const text = escapeHtml(value);
+      const q = state.query.trim();
+      if (!q) return text;
+      const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return text.replace(new RegExp(escaped, "gi"), match => `<mark>${match}</mark>`);
+    }
+
+    function reasonHtml(item, preview = false) {
+      const parts = preview ? item.reason.slice(0, 2) : item.reason;
+      return parts.map(line => `<p>${highlight(line)}</p>`).join("");
+    }
+
+    function sortItems(items) {
+      const dir = state.sortDirection === "asc" ? 1 : -1;
+      return [...items].sort((a, b) => {
+        let av = a[state.sortKey];
+        let bv = b[state.sortKey];
+        if (state.sortKey === "price") {
+          av = a.priceValue;
+          bv = b.priceValue;
+        }
+        if (state.sortKey === "amount") {
+          av = a.amountValue;
+          bv = b.amountValue;
+        }
+        if (state.sortKey === "time") {
+          av = a.time.replaceAll(":", "");
+          bv = b.time.replaceAll(":", "");
+        }
+        return String(av).localeCompare(String(bv), "zh-Hans-CN", { numeric: true }) * dir;
+      });
+    }
+
+    function filteredItems() {
+      const q = state.query.trim().toLowerCase();
+      return stocks.filter(item => {
+        const haystack = [
+          item.stock,
+          item.name,
+          item.code,
+          item.price,
+          item.amount,
+          item.time,
+          item.board,
+          item.keywords.join("+"),
+          item.reason.join(" ")
+        ].join(" ").toLowerCase();
+        const matchesQuery = !q || haystack.includes(q);
+        const matchesBoard = !state.board || item.board === state.board;
+        const matchesKeyword = !state.keyword || item.keywords.includes(state.keyword);
+        return matchesQuery && matchesBoard && matchesKeyword;
+      });
+    }
+
+    function renderChips() {
+      els.keywordChips.innerHTML = [
+        `<button class="chip${state.keyword === "" ? " active" : ""}" type="button" data-keyword="">全部关键词</button>`,
+        ...uniqueKeywords.map(keyword => (
+          `<button class="chip${state.keyword === keyword ? " active" : ""}" type="button" data-keyword="${escapeHtml(keyword)}">${escapeHtml(keyword)}</button>`
+        ))
+      ].join("");
+    }
+
+    function renderTable(items) {
+      els.table.innerHTML = items.map(item => `
+        <tr class="stock-row" data-code="${escapeHtml(item.code)}">
+          <td data-label="股票名称及代码"><span class="stock-name">${highlight(item.name)}</span><span class="code">${highlight(item.code)}</span></td>
+          <td data-label="当前股价" class="price">${highlight(item.price)}</td>
+          <td data-label="今日成交金额" class="amount">${highlight(item.amount)}</td>
+          <td data-label="最终涨停时间" class="time">${highlight(item.time)}</td>
+          <td data-label="连板天数"><span class="board">${highlight(item.board)}</span></td>
+          <td data-label="涨停关键词"><div class="keyword-list">${item.keywords.map(keyword => `<span class="keyword">${highlight(keyword)}</span>`).join("")}</div></td>
+          <td data-label="全文">
+            <button class="reason-toggle" type="button" data-reason-toggle="${escapeHtml(item.code)}" aria-expanded="false" aria-controls="reason-${escapeHtml(item.code)}">展开原因</button>
+          </td>
+        </tr>
+        <tr class="reason-row" id="reason-row-${escapeHtml(item.code)}" hidden>
+          <td class="reason-cell" colspan="7" data-label="涨停原因内容">
+            <div class="table-reason" id="reason-${escapeHtml(item.code)}">
+              <h4>${highlight(item.stock)}｜涨停原因内容</h4>
+              ${reasonHtml(item)}
+            </div>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function renderDetails(items) {
+      els.detailGrid.innerHTML = items.map((item, index) => `
+        <details class="detail-card" ${index === 0 ? "open" : ""}>
+          <summary>
+            <div class="summary-row">
+              <strong>${highlight(item.stock)}</strong>
+              <span>${highlight(item.time)} · ${highlight(item.amount)}</span>
+            </div>
+            <div class="keyword-list">${item.keywords.map(keyword => `<span class="keyword">${highlight(keyword)}</span>`).join("")}</div>
+          </summary>
+          <div class="detail-body">${reasonHtml(item)}</div>
+        </details>
+      `).join("");
+    }
+
+    function renderAnalysis() {
+      const maxAmount = Math.max(...stocks.map(item => item.amountValue));
+      els.amountBars.innerHTML = [...stocks]
+        .sort((a, b) => b.amountValue - a.amountValue)
+        .map(item => `
+          <div class="bar">
+            <span class="bar-label">${escapeHtml(item.name)}</span>
+            <span class="track"><span class="fill" style="width:${Math.max(8, (item.amountValue / maxAmount) * 100).toFixed(1)}%"></span></span>
+            <span class="bar-value">${escapeHtml(item.amount)}</span>
+          </div>
+        `).join("");
+
+      els.timeLine.innerHTML = [...stocks]
+        .sort((a, b) => a.time.localeCompare(b.time))
+        .map(item => `
+          <div class="time-item">
+            <time>${escapeHtml(item.time)}</time>
+            <span><strong>${escapeHtml(item.stock)}</strong>${escapeHtml(item.keywords.join(" + "))}</span>
+          </div>
+        `).join("");
+    }
+
+    function render() {
+      renderChips();
+      const items = sortItems(filteredItems());
+      renderTable(items);
+      renderDetails(items);
+      els.resultNote.textContent = `当前显示 ${items.length} / ${stocks.length} 条`;
+      els.empty.style.display = items.length ? "none" : "block";
+    }
+
+    function copyVisibleRows() {
+      const items = sortItems(filteredItems());
+      const header = "股票名称及代码\t当前股价\t今日成交金额\t最终涨停时间\t连板天数\t涨停关键词\t涨停原因内容";
+      const rows = items.map(item => [
+        item.stock,
+        item.price,
+        item.amount,
+        item.time,
+        item.board,
+        item.keywords.join("+"),
+        item.reason.join("\n")
+      ].join("\t"));
+      const text = [header, ...rows].join("\n");
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => showToast("已复制当前结果"), () => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const area = document.createElement("textarea");
+      area.value = text;
+      area.setAttribute("readonly", "");
+      area.style.position = "fixed";
+      area.style.top = "-1000px";
+      document.body.appendChild(area);
+      area.select();
+      const ok = document.execCommand("copy");
+      document.body.removeChild(area);
+      showToast(ok ? "已复制当前结果" : "复制失败，请手动选择表格");
+    }
+
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add("show");
+      window.setTimeout(() => els.toast.classList.remove("show"), 1800);
+    }
+
+    document.querySelectorAll("[data-sort]").forEach(button => {
+      button.addEventListener("click", () => {
+        const key = button.dataset.sort;
+        if (state.sortKey === key) {
+          state.sortDirection = state.sortDirection === "asc" ? "desc" : "asc";
+        } else {
+          state.sortKey = key;
+          state.sortDirection = key === "amount" ? "desc" : "asc";
+        }
+        render();
+      });
+    });
+
+    els.search.addEventListener("input", event => {
+      state.query = event.target.value;
+      render();
+    });
+
+    els.boardFilter.addEventListener("change", event => {
+      state.board = event.target.value;
+      render();
+    });
+
+    els.keywordChips.addEventListener("click", event => {
+      const button = event.target.closest("[data-keyword]");
+      if (!button) return;
+      state.keyword = button.dataset.keyword || "";
+      render();
+    });
+
+    els.table.addEventListener("click", event => {
+      const button = event.target.closest("[data-reason-toggle]");
+      if (!button) return;
+      const code = button.dataset.reasonToggle;
+      const row = document.getElementById(`reason-row-${code}`);
+      if (!row) return;
+      const willOpen = row.hasAttribute("hidden");
+      row.toggleAttribute("hidden", !willOpen);
+      button.setAttribute("aria-expanded", String(willOpen));
+      button.textContent = willOpen ? "收起原因" : "展开原因";
+    });
+
+    els.reset.addEventListener("click", () => {
+      state.query = "";
+      state.board = "";
+      state.keyword = "";
+      state.sortKey = "time";
+      state.sortDirection = "asc";
+      els.search.value = "";
+      els.boardFilter.value = "";
+      render();
+    });
+
+    els.copy.addEventListener("click", copyVisibleRows);
+
+    els.backTop.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    window.addEventListener("scroll", () => {
+      els.backTop.classList.toggle("visible", window.scrollY > 560);
+    }, { passive: true });
+
+    renderAnalysis();
+    render();
+  </script>
+</body>
+</html>
