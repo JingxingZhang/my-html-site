@@ -1,0 +1,1547 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>26-06-04 二板概率深度报告</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --surface: #ffffff;
+      --surface-soft: #fafafa;
+      --ink: #1d1d1f;
+      --muted: #6e6e73;
+      --line: rgba(29, 29, 31, 0.12);
+      --line-strong: rgba(29, 29, 31, 0.22);
+      --accent: #0071e3;
+      --accent-soft: rgba(0, 113, 227, 0.1);
+      --green: #22863a;
+      --green-soft: rgba(34, 134, 58, 0.1);
+      --amber: #b7791f;
+      --amber-soft: rgba(183, 121, 31, 0.12);
+      --red: #c62828;
+      --red-soft: rgba(198, 40, 40, 0.1);
+      --purple: #7a3db8;
+      --purple-soft: rgba(122, 61, 184, 0.1);
+      --radius: 8px;
+      --shadow: 0 18px 60px rgba(0, 0, 0, 0.08);
+      --max: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.55;
+      letter-spacing: 0;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: var(--accent);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .top-progress {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 30;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), #34c759);
+      transform-origin: left center;
+      transform: scaleX(0);
+    }
+
+    .hero {
+      min-height: 92vh;
+      display: grid;
+      align-items: end;
+      padding: 84px 24px 72px;
+      background:
+        radial-gradient(circle at 18% 22%, rgba(0, 113, 227, 0.12), transparent 28%),
+        linear-gradient(180deg, #ffffff 0%, #f5f5f7 100%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-inner,
+    .nav-inner,
+    .section-inner {
+      width: min(var(--max), calc(100vw - 48px));
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 0 5px var(--green-soft);
+    }
+
+    .hero h1 {
+      margin: 18px 0 14px;
+      max-width: 940px;
+      font-size: 64px;
+      line-height: 1.03;
+      letter-spacing: 0;
+      font-weight: 780;
+    }
+
+    .hero p {
+      max-width: 900px;
+      margin: 0;
+      color: #424245;
+      font-size: 21px;
+      line-height: 1.48;
+    }
+
+    .hero h1,
+    .hero p,
+    .section-head h2,
+    .section-head p,
+    .candidate-card h3,
+    .candidate-card .sub,
+    .note,
+    .risk-card h3,
+    .risk-card p,
+    .evidence-card h3,
+    .evidence-card p {
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      line-break: anywhere;
+    }
+
+    .mobile-break {
+      display: none;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+      gap: 28px;
+      margin-top: 42px;
+      align-items: stretch;
+    }
+
+    .hero-panel {
+      min-width: 0;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      padding: 24px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .metric {
+      min-width: 0;
+      min-height: 112px;
+      padding: 18px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .metric b {
+      display: block;
+      font-size: 26px;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .score-ring {
+      display: grid;
+      place-items: center;
+      min-height: 100%;
+      text-align: center;
+      gap: 16px;
+    }
+
+    .ring {
+      --value: 50;
+      width: 172px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: conic-gradient(var(--accent) calc(var(--value) * 1%), rgba(0, 113, 227, 0.12) 0);
+      display: grid;
+      place-items: center;
+    }
+
+    .ring::before {
+      content: "";
+      width: 124px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--surface);
+      position: absolute;
+    }
+
+    .ring span {
+      position: relative;
+      font-size: 42px;
+      font-weight: 780;
+    }
+
+    .ring-copy strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .ring-copy small {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .sticky-nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(245, 245, 247, 0.82);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav-inner {
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+
+    .brand-mini {
+      flex: 0 0 auto;
+      font-size: 14px;
+      font-weight: 720;
+      white-space: nowrap;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 0 0 auto;
+    }
+
+    .nav-links a,
+    .segmented button,
+    .chip-button {
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 8px 13px;
+      color: var(--muted);
+      background: transparent;
+      white-space: nowrap;
+      font-size: 13px;
+      transition: color 160ms ease, background 160ms ease, border 160ms ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active,
+    .segmented button.active,
+    .chip-button.active {
+      color: var(--ink);
+      background: var(--surface);
+      border-color: var(--line);
+    }
+
+    section {
+      padding: 72px 24px;
+    }
+
+    section + section {
+      border-top: 1px solid var(--line);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(280px, 0.55fr);
+      gap: 28px;
+      align-items: end;
+      margin-bottom: 28px;
+    }
+
+    .section-head h2 {
+      margin: 0 0 10px;
+      font-size: 40px;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .source-line {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .source-line a {
+      color: var(--accent);
+    }
+
+    .decision-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 26px;
+    }
+
+    .decision-item {
+      min-width: 0;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      min-height: 116px;
+    }
+
+    .decision-item span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .decision-item strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 22px;
+      line-height: 1.25;
+    }
+
+    .top2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .candidate-card {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 26px;
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.045);
+    }
+
+    .candidate-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), #34c759);
+    }
+
+    .candidate-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .rank-badge {
+      display: inline-grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--ink);
+      font-weight: 780;
+    }
+
+    .candidate-card h3 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.18;
+    }
+
+    .candidate-card .sub {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 18px 0;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 650;
+      color: #424245;
+      background: var(--surface-soft);
+      white-space: nowrap;
+    }
+
+    .badge.good {
+      color: var(--green);
+      background: var(--green-soft);
+      border-color: rgba(34, 134, 58, 0.16);
+    }
+
+    .badge.warn {
+      color: var(--amber);
+      background: var(--amber-soft);
+      border-color: rgba(183, 121, 31, 0.16);
+    }
+
+    .badge.bad {
+      color: var(--red);
+      background: var(--red-soft);
+      border-color: rgba(198, 40, 40, 0.16);
+    }
+
+    .badge.purple {
+      color: var(--purple);
+      background: var(--purple-soft);
+      border-color: rgba(122, 61, 184, 0.16);
+    }
+
+    .k-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .k-cell {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 10px 8px;
+      text-align: center;
+    }
+
+    .k-cell span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 2px;
+    }
+
+    .k-cell b {
+      font-size: 18px;
+    }
+
+    .note {
+      margin: 18px 0 0;
+      color: #424245;
+    }
+
+    .tools {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .search {
+      position: relative;
+      min-width: min(100%, 320px);
+      flex: 1 1 320px;
+    }
+
+    .search input {
+      width: 100%;
+      min-height: 42px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 0 16px 0 40px;
+      background: var(--surface);
+      color: var(--ink);
+      outline: none;
+    }
+
+    .search input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+
+    .search svg {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+    }
+
+    .segmented {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    .matrix-wrap {
+      max-width: 100%;
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 860px;
+      background: var(--surface);
+    }
+
+    th,
+    td {
+      padding: 15px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      position: sticky;
+      top: 58px;
+      z-index: 5;
+      background: rgba(250, 250, 250, 0.96);
+      color: #424245;
+      font-size: 12px;
+      font-weight: 720;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    th button {
+      all: unset;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: inherit;
+    }
+
+    tbody tr {
+      transition: background 140ms ease;
+    }
+
+    tbody tr:hover {
+      background: #fafafa;
+    }
+
+    tbody tr.hidden {
+      display: none;
+    }
+
+    td strong {
+      display: block;
+      font-size: 15px;
+    }
+
+    .num {
+      font-variant-numeric: tabular-nums;
+      font-weight: 720;
+    }
+
+    .themes {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .theme-card {
+      min-width: 0;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      min-height: 230px;
+      display: grid;
+      align-content: space-between;
+      gap: 18px;
+    }
+
+    .theme-card h3 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.35;
+    }
+
+    .strength-bar {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(29, 29, 31, 0.08);
+      overflow: hidden;
+      margin: 12px 0 8px;
+    }
+
+    .strength-bar span {
+      display: block;
+      height: 100%;
+      width: var(--strength);
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), #34c759);
+    }
+
+    .theme-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .small-meta {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .audit-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.78fr) minmax(320px, 0.42fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .timeline {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr);
+      gap: 16px;
+      position: relative;
+      padding-bottom: 22px;
+    }
+
+    .timeline-item:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      left: 45px;
+      top: 28px;
+      bottom: 0;
+      width: 1px;
+      background: var(--line);
+    }
+
+    .time-node {
+      position: relative;
+      z-index: 1;
+      width: 92px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: var(--ink);
+      color: white;
+      font-size: 12px;
+      font-weight: 740;
+    }
+
+    .timeline-item h3 {
+      margin: 2px 0 6px;
+      font-size: 17px;
+    }
+
+    .timeline-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .audit-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    details {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 0;
+      overflow: hidden;
+    }
+
+    summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 16px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      font-weight: 700;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    summary::after {
+      content: "+";
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      flex: 0 0 auto;
+    }
+
+    details[open] summary::after {
+      content: "-";
+    }
+
+    .detail-body {
+      padding: 0 18px 18px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .risk-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .risk-card {
+      min-width: 0;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      min-height: 178px;
+    }
+
+    .risk-card h3 {
+      margin: 0 0 10px;
+      font-size: 17px;
+    }
+
+    .risk-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .evidence-card {
+      min-width: 0;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      min-height: 154px;
+    }
+
+    .evidence-card h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .evidence-card p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .evidence-card a {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .disclaimer {
+      background: #1d1d1f;
+      color: #f5f5f7;
+      padding: 56px 24px;
+    }
+
+    .disclaimer .section-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 0.45fr) minmax(0, 1fr);
+      gap: 28px;
+    }
+
+    .disclaimer h2 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .disclaimer p {
+      margin: 0;
+      color: rgba(245, 245, 247, 0.72);
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 420ms ease, transform 420ms ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 980px) {
+      .hero h1 {
+        font-size: 46px;
+      }
+
+      .hero-grid,
+      .section-head,
+      .audit-layout,
+      .disclaimer .section-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-grid,
+      .decision-strip,
+      .risk-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .themes,
+      .evidence-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .hero {
+        min-height: auto;
+        padding: 64px 18px 44px;
+      }
+
+      .hero-inner,
+      .nav-inner,
+      .section-inner {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .hero h1 {
+        width: calc(100vw - 36px);
+        max-width: calc(100vw - 36px);
+        font-size: 32px;
+        line-height: 1.13;
+        word-break: break-all;
+      }
+
+      .hero p {
+        width: calc(100vw - 36px);
+        max-width: calc(100vw - 36px);
+        font-size: 16px;
+        word-break: break-all;
+      }
+
+      .mobile-break {
+        display: block;
+      }
+
+      .hero-panel {
+        padding: 14px;
+      }
+
+      section {
+        padding: 52px 18px;
+      }
+
+      .section-head h2 {
+        font-size: 30px;
+      }
+
+      .metric-grid,
+      .decision-strip,
+      .top2,
+      .themes,
+      .risk-grid,
+      .evidence-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .candidate-meta {
+        flex-direction: column-reverse;
+      }
+
+      .k-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .tools {
+        align-items: stretch;
+      }
+
+      .segmented {
+        overflow-x: auto;
+      }
+
+      .timeline-item {
+        grid-template-columns: 72px minmax(0, 1fr);
+      }
+
+      .time-node {
+        width: 72px;
+      }
+
+      .timeline-item:not(:last-child)::after {
+        left: 35px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-progress" aria-hidden="true"></div>
+
+  <header class="hero" id="top">
+    <div class="hero-inner">
+      <div class="eyebrow"><span class="dot" aria-hidden="true"></span>2026-06-04 首板池 · 盘前预测快照</div>
+      <h1>二板候选存在：<br><span>盈方微与日发精机<br class="mobile-break">进入 Top2。</span></h1>
+      <p>时间基线为 2026-06-05 08:54，市场处于启动/扩散阶段，情绪评分 5/10。主攻方向集中在半导体/算力硬件，煤炭/电力局部轮动；Final 为协议内相对排序分，不是真实概率。</p>
+
+      <div class="hero-grid">
+        <div class="hero-panel">
+          <div class="metric-grid" aria-label="关键快照">
+            <div class="metric">
+              <b>T 日</b>
+              <span>2026-06-04</span>
+            </div>
+            <div class="metric">
+              <b>T+1</b>
+              <span>2026-06-05，有效交易日</span>
+            </div>
+            <div class="metric">
+              <b>Top2</b>
+              <span>candidates exist</span>
+            </div>
+            <div class="metric">
+              <b>W2</b>
+              <span>未检出硬负面</span>
+            </div>
+          </div>
+          <div class="decision-strip" aria-label="决策状态">
+            <div class="decision-item">
+              <span>最高 Final</span>
+              <strong>82</strong>
+            </div>
+            <div class="decision-item">
+              <span>最高星级</span>
+              <strong>4★</strong>
+            </div>
+            <div class="decision-item">
+              <span>K6 状态</span>
+              <strong>2 / 6 yes</strong>
+            </div>
+            <div class="decision-item">
+              <span>硬负面</span>
+              <strong>0</strong>
+            </div>
+          </div>
+        </div>
+        <div class="hero-panel score-ring">
+          <div class="ring" style="--value: 50" role="img" aria-label="市场情绪评分 5/10"><span>5/10</span></div>
+          <div class="ring-copy">
+            <strong>启动 / 扩散阶段</strong>
+            <small>指数收跌、下跌家数较多，但成交仍高，涨停池 80 只，最高 4 板。</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="sticky-nav" aria-label="报告导航">
+    <div class="nav-inner">
+      <a class="brand-mini" href="#top">26-06-04 Report</a>
+      <div class="nav-links">
+        <a href="#top2">Top2</a>
+        <a href="#themes">主线</a>
+        <a href="#matrix">矩阵</a>
+        <a href="#audit">审计</a>
+        <a href="#evidence">证据</a>
+        <a href="#risks">风险</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <section id="top2">
+      <div class="section-inner">
+        <div class="section-head fade-in">
+          <div>
+            <h2>Top2 压缩卡</h2>
+            <p>两个候选均为 4★，K6=yes，且未触发 Veto。盈方微主线映射更直接，日发精机结构更干净。</p>
+          </div>
+          <div class="source-line">EvidenceCutoff：2026-06-05 08:54；W2：2026-06-04 15:00 → 2026-06-05 09:15。</div>
+        </div>
+
+        <div class="top2">
+          <article class="candidate-card fade-in">
+            <div class="candidate-meta">
+              <div>
+                <h3>盈方微（000670）</h3>
+                <div class="sub">半导体 → 存储芯片 → 长江存储代理 / 重组预期 · 分支前排</div>
+              </div>
+              <span class="rank-badge">1</span>
+            </div>
+            <div class="badge-row">
+              <span class="badge good">Final 82</span>
+              <span class="badge good">Confidence 71</span>
+              <span class="badge purple">4★</span>
+              <span class="badge good">K6 yes</span>
+              <span class="badge">Veto none</span>
+            </div>
+            <p class="note">主线强、结构干净、题材映射直接，是池内相对最完整的二板研究候选。本地涨停池结构：09:54:09 首封且末封、0 次开板、换手 12.06%、封单约 1.01 亿、成交约 9.29 亿。</p>
+            <div class="k-grid" aria-label="盈方微 K 门得分">
+              <div class="k-cell"><span>K1</span><b>19</b></div>
+              <div class="k-cell"><span>K2</span><b>16</b></div>
+              <div class="k-cell"><span>K3</span><b>14</b></div>
+              <div class="k-cell"><span>K4</span><b>14</b></div>
+              <div class="k-cell"><span>K5</span><b>12</b></div>
+              <div class="k-cell"><span>K6</span><b>10</b></div>
+            </div>
+          </article>
+
+          <article class="candidate-card fade-in">
+            <div class="candidate-meta">
+              <div>
+                <h3>日发精机（002520）</h3>
+                <div class="sub">高端装备 → 机器人 / 工业母机 → 资产出清与主业聚焦 · 分支核心</div>
+              </div>
+              <span class="rank-badge">2</span>
+            </div>
+            <div class="badge-row">
+              <span class="badge good">Final 78</span>
+              <span class="badge good">Confidence 64</span>
+              <span class="badge purple">4★</span>
+              <span class="badge good">K6 yes</span>
+              <span class="badge">Veto none</span>
+            </div>
+            <p class="note">结构最好，逻辑虽弱于半导体主线，但独立分支和筹码吸收支持进入 Top2。本地涨停池结构：10:57:00 首封且末封、0 次开板、换手 7.39%、封单约 0.80 亿、成交约 3.19 亿。</p>
+            <div class="k-grid" aria-label="日发精机 K 门得分">
+              <div class="k-cell"><span>K1</span><b>17</b></div>
+              <div class="k-cell"><span>K2</span><b>13</b></div>
+              <div class="k-cell"><span>K3</span><b>12</b></div>
+              <div class="k-cell"><span>K4</span><b>15</b></div>
+              <div class="k-cell"><span>K5</span><b>11</b></div>
+              <div class="k-cell"><span>K6</span><b>10</b></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="themes">
+      <div class="section-inner">
+        <div class="section-head fade-in">
+          <div>
+            <h2>市场与主题全景</h2>
+            <p>主线强度以报告内给定分值呈现，卡片保留外部参照、池内映射和 T+1 接力路径。</p>
+          </div>
+          <div class="source-line">主要依据：<a href="https://finance.sina.com.cn/jjxw/2026-06-04/doc-iniafrts0414407.shtml" target="_blank" rel="noopener">新浪收评</a>、<a href="https://finance.sina.com.cn/stock/ztbfp/2026-06-04/doc-iniafrtq3646556.shtml" target="_blank" rel="noopener">涨停梯队</a>、<a href="https://stock.10jqka.com.cn/20260604/c677211823.shtml" target="_blank" rel="noopener">同花顺</a>。</div>
+        </div>
+
+        <div class="themes">
+          <article class="theme-card fade-in">
+            <div>
+              <h3>半导体 / 电子</h3>
+              <div class="strength-bar" aria-label="强度 82"><span style="--strength: 82%"></span></div>
+              <div class="small-meta">强度 82 · active main line</div>
+            </div>
+            <p>天洋新材 4 板、鑫科材料 3 板，中船特气、太极实业、京东方A等强反馈；映射盈方微。</p>
+          </article>
+          <article class="theme-card fade-in">
+            <div>
+              <h3>高端装备 / 机器人</h3>
+              <div class="strength-bar" aria-label="强度 62"><span style="--strength: 62%"></span></div>
+              <div class="small-meta">强度 62 · active branch</div>
+            </div>
+            <p>万安科技、日盈电子、锋龙股份等同日涨停；映射日发精机，依赖分支维持活跃。</p>
+          </article>
+          <article class="theme-card fade-in">
+            <div>
+              <h3>煤炭 / 焦炭</h3>
+              <div class="strength-bar" aria-label="强度 70"><span style="--strength: 70%"></span></div>
+              <div class="small-meta">强度 70 · active branch</div>
+            </div>
+            <p>大有能源 4 板，煤炭股继续走强；安泰优于凯瑞德，但外部高度核心吸收识别。</p>
+          </article>
+          <article class="theme-card fade-in">
+            <div>
+              <h3>电力</h3>
+              <div class="strength-bar" aria-label="强度 72"><span style="--strength: 72%"></span></div>
+              <div class="small-meta">强度 72 · active main line</div>
+            </div>
+            <p>豫能控股、新中港 2 板，梅雁吉祥同日涨停；池外 2 板更强，池内稀缺性不足。</p>
+          </article>
+          <article class="theme-card fade-in">
+            <div>
+              <h3>硅材料 / 玻璃</h3>
+              <div class="strength-bar" aria-label="强度 48"><span style="--strength: 48%"></span></div>
+              <div class="small-meta">强度 48 · local theme</div>
+            </div>
+            <p>玻璃/硅材料局部表现；三峡新材偏个股项目与国资逻辑，主线扩散不足。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="matrix">
+      <div class="section-inner">
+        <div class="section-head fade-in">
+          <div>
+            <h2>候选排序与剔除矩阵</h2>
+            <p>可按名称搜索，可切换全部、Top2、剔除和 Major 风险视图；Final 与 Confidence 支持点击表头排序。</p>
+          </div>
+          <div class="source-line">K6=yes 是进入 Top2 的关键过滤条件；Major 或 K6不足会压制资格。</div>
+        </div>
+
+        <div class="tools fade-in">
+          <label class="search" for="candidateSearch">
+            <span class="sr-only">搜索候选</span>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M10.8 18.1a7.3 7.3 0 1 1 0-14.6 7.3 7.3 0 0 1 0 14.6Zm5.4-1.9 4.3 4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <input id="candidateSearch" type="search" placeholder="搜索股票、题材、Veto 或 K6 状态">
+          </label>
+          <div class="segmented" aria-label="候选筛选">
+            <button type="button" class="active" data-filter="all">全部</button>
+            <button type="button" data-filter="top2">Top2</button>
+            <button type="button" data-filter="rejected">剔除</button>
+            <button type="button" data-filter="major">Major</button>
+          </div>
+        </div>
+
+        <div class="matrix-wrap fade-in">
+          <table aria-label="候选排序与剔除矩阵">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Stock</th>
+                <th><button type="button" data-sort="final">Final <span aria-hidden="true">↕</span></button></th>
+                <th><button type="button" data-sort="confidence">Confidence <span aria-hidden="true">↕</span></button></th>
+                <th>Star</th>
+                <th>K Gate</th>
+                <th>K6</th>
+                <th>Veto</th>
+                <th>Top2 Eligibility</th>
+              </tr>
+            </thead>
+            <tbody id="candidateRows">
+              <tr data-final="82" data-confidence="71" data-tags="top2 盈方微 000670 半导体 存储芯片 k6 yes veto none">
+                <td class="num">1</td>
+                <td><strong>盈方微</strong>000670 · 半导体/存储芯片</td>
+                <td class="num">82</td>
+                <td class="num">71</td>
+                <td><span class="badge purple">4★</span></td>
+                <td>6/6</td>
+                <td><span class="badge good">yes</span></td>
+                <td>none</td>
+                <td>yes · 半导体主线正反馈 + 0次开板 + 封单约1.01亿</td>
+              </tr>
+              <tr data-final="78" data-confidence="64" data-tags="top2 日发精机 002520 高端装备 机器人 工业母机 k6 yes veto none">
+                <td class="num">2</td>
+                <td><strong>日发精机</strong>002520 · 高端装备/机器人</td>
+                <td class="num">78</td>
+                <td class="num">64</td>
+                <td><span class="badge purple">4★</span></td>
+                <td>6/6</td>
+                <td><span class="badge good">yes</span></td>
+                <td>none</td>
+                <td>yes · 0次开板 + 封单/成交比强 + 分支独立</td>
+              </tr>
+              <tr data-final="67" data-confidence="62" data-tags="rejected major 安泰集团 煤炭 焦炭 k6 highly uncertain veto major">
+                <td class="num">3</td>
+                <td><strong>安泰集团</strong>煤炭/焦炭</td>
+                <td class="num">67</td>
+                <td class="num">62</td>
+                <td><span class="badge warn">3★</span></td>
+                <td>5/6</td>
+                <td><span class="badge warn">highly uncertain</span></td>
+                <td><span class="badge bad">Major</span></td>
+                <td>no：K6不足且外部核心压制</td>
+              </tr>
+              <tr data-final="59" data-confidence="58" data-tags="rejected 三峡新材 硅材料 玻璃 k6 highly uncertain veto none">
+                <td class="num">4</td>
+                <td><strong>三峡新材</strong>硅材料/玻璃</td>
+                <td class="num">59</td>
+                <td class="num">58</td>
+                <td><span class="badge warn">2★</span></td>
+                <td>4/6</td>
+                <td><span class="badge warn">highly uncertain</span></td>
+                <td>none</td>
+                <td>no：K2/K3不足</td>
+              </tr>
+              <tr data-final="55" data-confidence="57" data-tags="rejected major 梅雁吉祥 电力 k6 highly uncertain veto major">
+                <td class="num">5</td>
+                <td><strong>梅雁吉祥</strong>电力</td>
+                <td class="num">55</td>
+                <td class="num">57</td>
+                <td><span class="badge warn">2★</span></td>
+                <td>4/6</td>
+                <td><span class="badge warn">highly uncertain</span></td>
+                <td><span class="badge bad">Major</span></td>
+                <td>no：池外2板替代、3次开板</td>
+              </tr>
+              <tr data-final="49" data-confidence="52" data-tags="rejected major 凯瑞德 煤炭 焦炭 k6 no veto major">
+                <td class="num">6</td>
+                <td><strong>凯瑞德</strong>煤炭/焦炭</td>
+                <td class="num">49</td>
+                <td class="num">52</td>
+                <td><span class="badge bad">1★</span></td>
+                <td>3/6</td>
+                <td><span class="badge bad">no</span></td>
+                <td><span class="badge bad">Major</span></td>
+                <td>no：主因弱、同题材替代明显</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="audit">
+      <div class="section-inner">
+        <div class="section-head fade-in">
+          <div>
+            <h2>快照与审计基线</h2>
+            <p>报告严格限定在 2026-06-05 09:15 前的信息窗口，不使用 W3。G0、时间过滤、结构字段与数学复算通过。</p>
+          </div>
+          <div class="source-line">6月19日至21日才为端午休市，故 2026-06-05 为有效交易日。</div>
+        </div>
+
+        <div class="audit-layout">
+          <div class="timeline fade-in" aria-label="审计时间线">
+            <div class="timeline-item">
+              <div class="time-node">W1</div>
+              <div>
+                <h3>首板交易窗口</h3>
+                <p>2026-06-04 09:15 → 15:00；6只均在本地涨停池接口中确认为 2026-06-04 首板，主板非风险警示。</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="time-node">W2</div>
+              <div>
+                <h3>发酵期风险清理</h3>
+                <p>2026-06-04 15:00 → 2026-06-05 09:15；未检出候选池个股澄清、停牌、监管、减持等硬负面。</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="time-node">08:54</div>
+              <div>
+                <h3>EvidenceCutoff</h3>
+                <p>生成时间与证据截止均为 2026-06-05 08:54，未使用 2026-06-05 09:15 之后信息。</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="time-node">W3</div>
+              <div>
+                <h3>未使用</h3>
+                <p>盘中反馈不进入本次盘前预测快照。</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="audit-list fade-in">
+            <details open>
+              <summary>G0 与时间过滤</summary>
+              <div class="detail-body">6只均为 2026-06-04 首板，主板非风险警示，10%涨跌幅事件可定义；时间过滤通过。</div>
+            </details>
+            <details>
+              <summary>发酵期风险清理</summary>
+              <div class="detail-body">截至 EvidenceCutoff，未检出候选池个股 W2 澄清、停牌、监管、减持等硬负面；盈方微仅检出股东会决议/法律意见类中性公告。</div>
+            </details>
+            <details>
+              <summary>Top2 合规结论</summary>
+              <div class="detail-body">Top2 候选均达到 4★、K6=yes 且存在独立增量条件。安泰集团、梅雁吉祥、凯瑞德因 Major 或 K6不足剔除；三峡新材因主线与稀缺性不足剔除。</div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="evidence">
+      <div class="section-inner">
+        <div class="section-head fade-in">
+          <div>
+            <h2>证据入口</h2>
+            <p>保留报告内引用链接，作为事实出处和复核入口。链接会在新标签页打开。</p>
+          </div>
+          <div class="source-line">页面不联网加载资源；仅保留可点击的外部证据链接。</div>
+        </div>
+
+        <div class="evidence-grid">
+          <article class="evidence-card fade-in">
+            <h3>市场收评</h3>
+            <p>6月4日指数收跌、全市场下跌家数较多，但成交仍高、涨停池80只、最高4板。</p>
+            <a href="https://finance.sina.com.cn/jjxw/2026-06-04/doc-iniafrts0414407.shtml" target="_blank" rel="noopener">打开新浪收评</a>
+          </article>
+          <article class="evidence-card fade-in">
+            <h3>涨停梯队</h3>
+            <p>用于确认最高 4 板、涨停池结构和外部高度参考。</p>
+            <a href="https://finance.sina.com.cn/stock/ztbfp/2026-06-04/doc-iniafrtq3646556.shtml" target="_blank" rel="noopener">打开涨停梯队</a>
+          </article>
+          <article class="evidence-card fade-in">
+            <h3>盈方微题材映射</h3>
+            <p>电子元器件分销增长、长江存储代理、重组预期和存储芯片景气。</p>
+            <a href="https://stock.stockstar.com/RB2026060400021807.shtml" target="_blank" rel="noopener">打开证券之星</a>
+          </article>
+          <article class="evidence-card fade-in">
+            <h3>盈方微涨停原因</h3>
+            <p>半导体/存储芯片链条的同花顺来源。</p>
+            <a href="https://yuanchuang.10jqka.com.cn/20260604/c677208705.shtml" target="_blank" rel="noopener">打开同花顺</a>
+          </article>
+          <article class="evidence-card fade-in">
+            <h3>日发精机涨停原因</h3>
+            <p>境外亏损资产出清、高端数控机床主业聚焦、机器人/新能源/航空航天映射。</p>
+            <a href="https://finance.sina.com.cn/stock/aiassist/ydfx/2026-06-04/doc-iniaffcu3766352.shtml" target="_blank" rel="noopener">打开新浪财经</a>
+          </article>
+          <article class="evidence-card fade-in">
+            <h3>电力与分支参照</h3>
+            <p>豫能控股、新中港2板，梅雁吉祥同日涨停等参照信息。</p>
+            <a href="https://www.stcn.com/article/detail/3943075.html" target="_blank" rel="noopener">打开证券时报</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="risks">
+      <div class="section-inner">
+        <div class="section-head fade-in">
+          <div>
+            <h2>风险与观察变量</h2>
+            <p>市场并非全面高潮，后排承接、外部核心虹吸和结构开板会影响二板锁板质量。</p>
+          </div>
+          <div class="source-line">风险区保留原报告措辞，不转化为交易建议。</div>
+        </div>
+
+        <div class="risk-grid">
+          <article class="risk-card fade-in">
+            <span class="badge warn">全部</span>
+            <h3>指数与个股普跌</h3>
+            <p>市场不是全面高潮，后排承接容易分化。</p>
+          </article>
+          <article class="risk-card fade-in">
+            <span class="badge warn">盈方微 / 安泰集团 / 梅雁吉祥</span>
+            <h3>外部核心虹吸</h3>
+            <p>半导体、电力、煤炭均有更高识别度池外核心。</p>
+          </article>
+          <article class="risk-card fade-in">
+            <span class="badge bad">梅雁吉祥 / 安泰集团 / 凯瑞德</span>
+            <h3>结构开板和高换手</h3>
+            <p>二板锁板需要更强增量资金覆盖抛压。</p>
+          </article>
+          <article class="risk-card fade-in">
+            <span class="badge warn">三峡新材 / 凯瑞德</span>
+            <h3>主题局部化</h3>
+            <p>缺少主线宽度或独立硬催化，K6 难成立。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="disclaimer">
+    <div class="section-inner">
+      <h2>免责声明</h2>
+      <p>本协议仅用于公开信息下的结构化研究与概率推理，不构成任何投资建议、买卖指令、仓位建议或收益承诺。A 股短线接力博弈高度非线性，任何模型化判断都可能失效。</p>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const progress = document.querySelector(".top-progress");
+      const navLinks = Array.from(document.querySelectorAll(".nav-links a"));
+      const sections = navLinks
+        .map((link) => document.querySelector(link.getAttribute("href")))
+        .filter(Boolean);
+
+      const updateProgress = () => {
+        const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+        const amount = scrollable > 0 ? window.scrollY / scrollable : 0;
+        if (progress) progress.style.transform = `scaleX(${Math.max(0, Math.min(1, amount))})`;
+      };
+
+      const updateActiveNav = () => {
+        const threshold = window.scrollY + 110;
+        let current = sections[0]?.id || "";
+        sections.forEach((section) => {
+          if (section.offsetTop <= threshold) current = section.id;
+        });
+        navLinks.forEach((link) => {
+          link.classList.toggle("active", link.getAttribute("href") === `#${current}`);
+        });
+      };
+
+      window.addEventListener("scroll", () => {
+        updateProgress();
+        updateActiveNav();
+      }, { passive: true });
+      updateProgress();
+      updateActiveNav();
+
+      const revealItems = document.querySelectorAll(".fade-in");
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12 });
+        revealItems.forEach((item) => observer.observe(item));
+      } else {
+        revealItems.forEach((item) => item.classList.add("visible"));
+      }
+
+      const searchInput = document.querySelector("#candidateSearch");
+      const filterButtons = Array.from(document.querySelectorAll("[data-filter]"));
+      const tbody = document.querySelector("#candidateRows");
+      const sortButtons = Array.from(document.querySelectorAll("[data-sort]"));
+      let activeFilter = "all";
+      let sortState = { key: "final", dir: "desc" };
+
+      const getRows = () => Array.from(tbody?.querySelectorAll("tr") || []);
+
+      const applyCandidateView = () => {
+        const query = (searchInput?.value || "").trim().toLowerCase();
+        getRows().forEach((row) => {
+          const tags = (row.dataset.tags || "").toLowerCase();
+          const matchesFilter = activeFilter === "all" || tags.includes(activeFilter);
+          const matchesSearch = !query || tags.includes(query) || row.textContent.toLowerCase().includes(query);
+          row.classList.toggle("hidden", !(matchesFilter && matchesSearch));
+        });
+      };
+
+      const sortRows = (key) => {
+        if (!tbody) return;
+        if (sortState.key === key) {
+          sortState.dir = sortState.dir === "desc" ? "asc" : "desc";
+        } else {
+          sortState = { key, dir: "desc" };
+        }
+        const direction = sortState.dir === "desc" ? -1 : 1;
+        getRows()
+          .sort((a, b) => {
+            const left = Number(a.dataset[key] || 0);
+            const right = Number(b.dataset[key] || 0);
+            return (left - right) * direction;
+          })
+          .forEach((row, index) => {
+            const rankCell = row.querySelector("td");
+            if (rankCell) rankCell.textContent = String(index + 1);
+            tbody.appendChild(row);
+          });
+        applyCandidateView();
+      };
+
+      searchInput?.addEventListener("input", applyCandidateView);
+      filterButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          activeFilter = button.dataset.filter || "all";
+          filterButtons.forEach((item) => item.classList.toggle("active", item === button));
+          applyCandidateView();
+        });
+      });
+      sortButtons.forEach((button) => {
+        button.addEventListener("click", () => sortRows(button.dataset.sort));
+      });
+      applyCandidateView();
+    })();
+  </script>
+</body>
+</html>
