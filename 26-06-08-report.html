@@ -1,0 +1,1708 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Top2 结构化预测快照 | 2026-06-09</title>
+  <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNiIgZmlsbD0iIzBiNmJjYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1zaXplPSIxNiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJBcmlhbCI+MjwvdGV4dD48L3N2Zz4=">
+  <style>
+    :root {
+      --bg: #f5f6f8;
+      --paper: #ffffff;
+      --ink: #111827;
+      --muted: #667085;
+      --soft: #98a2b3;
+      --line: #e4e7ec;
+      --line-strong: #d0d5dd;
+      --accent: #0b6bcb;
+      --accent-quiet: #e8f2ff;
+      --success: #07835f;
+      --success-quiet: #e7f7f1;
+      --warn: #b86b00;
+      --warn-quiet: #fff4df;
+      --danger: #b42318;
+      --danger-quiet: #fff0ed;
+      --shadow: 0 18px 60px rgba(17, 24, 39, .08);
+      --radius: 8px;
+      --max: 1180px;
+      --nav-h: 68px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.65;
+      letter-spacing: 0;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .skip-link {
+      position: fixed;
+      left: 16px;
+      top: 12px;
+      z-index: 1000;
+      transform: translateY(-160%);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 8px 12px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      transition: transform .18s ease;
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .progress {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 999;
+      height: 3px;
+      background: transparent;
+    }
+
+    .progress__bar {
+      width: 0;
+      height: 100%;
+      background: var(--accent);
+      transition: width .08s linear;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      min-height: var(--nav-h);
+      border-bottom: 1px solid rgba(208, 213, 221, .86);
+      background: rgba(255, 255, 255, .82);
+      backdrop-filter: saturate(180%) blur(18px);
+    }
+
+    .topbar__inner {
+      width: min(var(--max), calc(100% - 40px));
+      min-height: var(--nav-h);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      min-width: 0;
+    }
+
+    .brand__title {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand__meta {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav a,
+    .nav button {
+      flex: 0 0 auto;
+      border: 0;
+      border-radius: 999px;
+      padding: 7px 12px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 13px;
+      line-height: 1.2;
+      transition: color .16s ease, background .16s ease;
+    }
+
+    .nav a:hover,
+    .nav a:focus-visible,
+    .nav button:hover,
+    .nav button:focus-visible {
+      color: var(--ink);
+      background: #eef2f6;
+      outline: 0;
+    }
+
+    .nav a.is-active {
+      color: var(--ink);
+      background: #e6edf6;
+      font-weight: 650;
+    }
+
+    .section {
+      scroll-margin-top: calc(var(--nav-h) + 18px);
+    }
+
+    .hero {
+      background:
+        radial-gradient(circle at 20% 10%, rgba(11, 107, 203, .11), transparent 34%),
+        linear-gradient(180deg, #ffffff 0%, #f5f6f8 86%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero__inner,
+    .section__inner {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .hero__inner {
+      padding: 54px 0 34px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 28px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 11px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, .74);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      max-width: 900px;
+      margin-top: 22px;
+      font-size: 56px;
+      line-height: 1.05;
+      letter-spacing: 0;
+      font-weight: 800;
+    }
+
+    .hero__lead {
+      max-width: 860px;
+      margin-top: 18px;
+      color: #475467;
+      font-size: 20px;
+      line-height: 1.55;
+    }
+
+    .hero__grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr);
+      gap: 18px;
+      align-items: stretch;
+      margin-top: 34px;
+    }
+
+    .hero__panel,
+    .metric-tile,
+    .candidate-card,
+    .tool-panel,
+    .audit-card,
+    .risk-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .82);
+      box-shadow: 0 1px 2px rgba(16, 24, 40, .03);
+    }
+
+    .hero__panel {
+      padding: 22px;
+    }
+
+    .hero__panel-title {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .hero__panel-body {
+      margin-top: 10px;
+      color: #1f2937;
+      font-size: 17px;
+    }
+
+    .baseline {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .baseline__item {
+      min-width: 0;
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+    }
+
+    .baseline__label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .baseline__value {
+      display: block;
+      margin-top: 2px;
+      font-size: 14px;
+      font-weight: 650;
+      word-break: break-word;
+    }
+
+    .score-ring {
+      display: grid;
+      place-items: center;
+      min-height: 100%;
+      padding: 22px;
+      text-align: center;
+    }
+
+    .ring {
+      width: 168px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: conic-gradient(var(--accent) 0 60%, #e9edf2 60% 100%);
+      box-shadow: inset 0 0 0 1px rgba(17, 24, 39, .04);
+    }
+
+    .ring__inner {
+      width: 124px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #fff;
+      box-shadow: inset 0 0 0 1px var(--line);
+    }
+
+    .ring__number {
+      display: block;
+      font-size: 42px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .ring__label {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .score-ring p {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .decision-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .metric-tile {
+      padding: 16px;
+      min-height: 108px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .metric-tile__label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .metric-tile__value {
+      font-size: 22px;
+      line-height: 1.22;
+      font-weight: 760;
+    }
+
+    .metric-tile__hint {
+      color: var(--soft);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .section__inner {
+      padding: 44px 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 22px;
+      margin-bottom: 20px;
+    }
+
+    .section-head__text {
+      max-width: 800px;
+    }
+
+    h2 {
+      font-size: 32px;
+      line-height: 1.18;
+      font-weight: 780;
+    }
+
+    .section-desc {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .segmented {
+      display: inline-flex;
+      flex: 0 0 auto;
+      gap: 3px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px;
+      background: #fff;
+    }
+
+    .segmented button {
+      border: 0;
+      border-radius: 999px;
+      padding: 7px 12px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 13px;
+      font-weight: 650;
+      line-height: 1.2;
+    }
+
+    .segmented button[aria-pressed="true"] {
+      color: var(--ink);
+      background: var(--accent-quiet);
+    }
+
+    .candidate-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .candidate-card {
+      position: relative;
+      overflow: hidden;
+      padding: 22px;
+    }
+
+    .candidate-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 3px;
+      background: var(--accent);
+    }
+
+    .candidate-card__top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .rank {
+      display: inline-grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--ink);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .stock-title {
+      min-width: 0;
+    }
+
+    .stock-title h3 {
+      font-size: 26px;
+      line-height: 1.2;
+      font-weight: 780;
+    }
+
+    .stock-code {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 9px;
+      color: #344054;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 650;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .pill--success {
+      border-color: rgba(7, 131, 95, .22);
+      color: var(--success);
+      background: var(--success-quiet);
+    }
+
+    .pill--warn {
+      border-color: rgba(184, 107, 0, .24);
+      color: var(--warn);
+      background: var(--warn-quiet);
+    }
+
+    .pill--danger {
+      border-color: rgba(180, 35, 24, .2);
+      color: var(--danger);
+      background: var(--danger-quiet);
+    }
+
+    .candidate-card__conclusion {
+      margin-top: 16px;
+      color: #344054;
+      font-size: 15px;
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 9px;
+      margin-top: 18px;
+    }
+
+    .score-box {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      background: #fbfcfd;
+    }
+
+    .score-box span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .score-box strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 22px;
+      line-height: 1.1;
+      font-weight: 790;
+    }
+
+    .gate-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    details {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    summary {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      min-height: 46px;
+      padding: 10px 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    summary::after {
+      content: "+";
+      flex: 0 0 auto;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      background: #f2f4f7;
+      line-height: 1;
+    }
+
+    details[open] summary::after {
+      content: "-";
+    }
+
+    .gate-body {
+      border-top: 1px solid var(--line);
+      padding: 12px;
+      color: #475467;
+      font-size: 14px;
+    }
+
+    .gate-score {
+      display: grid;
+      grid-template-columns: 74px minmax(0, 1fr) 44px;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .bar {
+      height: 7px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #eef2f6;
+    }
+
+    .bar span {
+      display: block;
+      width: var(--w, 0%);
+      height: 100%;
+      border-radius: inherit;
+      background: var(--accent);
+    }
+
+    .audit-only {
+      display: none;
+    }
+
+    body[data-view="audit"] .audit-only {
+      display: block;
+    }
+
+    body[data-view="audit"] .audit-only.table-wrap {
+      display: block;
+    }
+
+    .story-grid {
+      display: grid;
+      grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .audit-card,
+    .risk-card,
+    .tool-panel {
+      padding: 20px;
+      background: #fff;
+    }
+
+    .audit-card h3,
+    .risk-card h3 {
+      font-size: 18px;
+      line-height: 1.25;
+      font-weight: 760;
+    }
+
+    .audit-card p,
+    .risk-card p {
+      margin-top: 10px;
+      color: #475467;
+      font-size: 15px;
+    }
+
+    .timeline {
+      position: relative;
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      bottom: 10px;
+      width: 2px;
+      background: var(--line);
+    }
+
+    .timeline__item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+    }
+
+    .timeline__dot {
+      position: relative;
+      z-index: 1;
+      width: 22px;
+      height: 22px;
+      border: 5px solid #fff;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 1px var(--line);
+    }
+
+    .timeline__label {
+      font-weight: 760;
+      line-height: 1.25;
+    }
+
+    .timeline__time {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .matrix-tools {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .search {
+      position: relative;
+      flex: 1 1 260px;
+      max-width: 420px;
+    }
+
+    .search input {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 14px 8px 38px;
+      color: var(--ink);
+      background: #fff;
+      outline: 0;
+    }
+
+    .search input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(11, 107, 203, .14);
+    }
+
+    .search::before {
+      content: "";
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      width: 13px;
+      height: 13px;
+      border: 2px solid var(--soft);
+      border-radius: 50%;
+      transform: translateY(-55%);
+    }
+
+    .search::after {
+      content: "";
+      position: absolute;
+      left: 27px;
+      top: 24px;
+      width: 7px;
+      height: 2px;
+      border-radius: 999px;
+      background: var(--soft);
+      transform: rotate(45deg);
+    }
+
+    .filter-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .filter-buttons button,
+    .copy-btn {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 12px;
+      color: var(--muted);
+      background: #fff;
+      font-size: 13px;
+      font-weight: 650;
+      line-height: 1.2;
+    }
+
+    .filter-buttons button[aria-pressed="true"],
+    .copy-btn:hover,
+    .copy-btn:focus-visible {
+      color: var(--ink);
+      background: var(--accent-quiet);
+      border-color: rgba(11, 107, 203, .22);
+      outline: 0;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(16, 24, 40, .03);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      width: 100%;
+      min-width: 820px;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      padding: 13px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      color: #475467;
+      background: #f8fafc;
+      font-size: 12px;
+      font-weight: 760;
+      white-space: nowrap;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    tbody tr {
+      transition: background .14s ease;
+    }
+
+    tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .sortable {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: 0;
+      padding: 0;
+      color: inherit;
+      background: transparent;
+      font: inherit;
+      font-weight: inherit;
+    }
+
+    .sort-mark {
+      color: var(--soft);
+      font-size: 11px;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .num {
+      font-variant-numeric: tabular-nums;
+      font-weight: 760;
+    }
+
+    .risk-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .risk-card {
+      min-height: 168px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .risk-card__meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend i {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .legend .success-dot {
+      background: var(--success);
+    }
+
+    .legend .warn-dot {
+      background: var(--warn);
+    }
+
+    .legend .danger-dot {
+      background: var(--danger);
+    }
+
+    .disclaimer {
+      border-top: 1px solid var(--line);
+      background: #111827;
+      color: #f9fafb;
+    }
+
+    .disclaimer .section__inner {
+      padding: 28px 0;
+    }
+
+    .disclaimer p {
+      max-width: 980px;
+      color: #d0d5dd;
+      font-size: 14px;
+    }
+
+    .disclaimer strong {
+      color: #fff;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 200;
+      max-width: calc(100vw - 36px);
+      border: 1px solid rgba(7, 131, 95, .22);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      color: var(--success);
+      background: #fff;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px);
+      transition: opacity .18s ease, transform .18s ease;
+    }
+
+    .toast.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    @media (max-width: 980px) {
+      h1 {
+        font-size: 42px;
+      }
+
+      .hero__grid,
+      .story-grid,
+      .candidate-grid,
+      .risk-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .decision-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      :root {
+        --nav-h: 64px;
+      }
+
+      .topbar__inner,
+      .hero__inner,
+      .section__inner {
+        width: min(var(--max), calc(100% - 28px));
+      }
+
+      .topbar__inner {
+        align-items: flex-start;
+        flex-direction: column;
+        justify-content: center;
+        gap: 8px;
+        padding: 9px 0;
+      }
+
+      .nav {
+        width: 100%;
+      }
+
+      .hero__inner {
+        padding: 36px 0 26px;
+      }
+
+      h1 {
+        font-size: 34px;
+        line-height: 1.12;
+      }
+
+      .hero__lead {
+        font-size: 17px;
+      }
+
+      .decision-strip,
+      .baseline,
+      .score-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-head {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      h2 {
+        font-size: 26px;
+      }
+
+      .candidate-card,
+      .hero__panel,
+      .audit-card,
+      .risk-card,
+      .tool-panel {
+        padding: 16px;
+      }
+
+      .candidate-card__top {
+        flex-direction: column;
+      }
+
+      table {
+        min-width: 760px;
+        font-size: 13px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body data-view="summary">
+  <a class="skip-link" href="#main">跳过导航</a>
+  <div class="progress" aria-hidden="true"><div class="progress__bar" id="progressBar"></div></div>
+
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="brand" href="#summary" aria-label="返回摘要">
+        <span class="brand__title">Top2 结构化预测快照</span>
+        <span class="brand__meta">T day 2026-06-08 · T+1 2026-06-09</span>
+      </a>
+      <nav class="nav" aria-label="页面导航">
+        <a href="#summary" class="is-active">摘要</a>
+        <a href="#top2">Top2</a>
+        <a href="#panorama">主线</a>
+        <a href="#matrix">矩阵</a>
+        <a href="#timeline">审计</a>
+        <a href="#risks">风险</a>
+        <button type="button" id="copyBaseline" aria-label="复制时间基线">复制基线</button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero section" id="summary">
+      <div class="hero__inner">
+        <span class="eyebrow"><span class="dot" aria-hidden="true"></span>pre-call-auction prediction snapshot · EvidenceCutoff 2026-06-09 08:55</span>
+        <h1>机器人主线逆势扩散，Top2 候选存在。</h1>
+        <p class="hero__lead">市场处于“主线扩散但全市场强分歧”：情绪评分 6/10，主攻方向为机器人/减速器/物理AI。W2 未发现 Top2 主逻辑被公司公告或监管信息直接反证，但大盘风险偏好弱，需压制非核心后排。</p>
+
+        <div class="hero__grid">
+          <div class="hero__panel" aria-label="核心结论">
+            <div class="hero__panel-title">One-screen Summary</div>
+            <p class="hero__panel-body">Rank 1 埃斯顿（002747）Final 78，Confidence 75，4★；Rank 2 宁波东力（002164）Final 78，Confidence 69，4★。两者 K6 均为 yes，Veto 均为 none。</p>
+            <div class="baseline" id="baselineText">
+              <div class="baseline__item"><span class="baseline__label">模式</span><span class="baseline__value">pre-call-auction prediction snapshot</span></div>
+              <div class="baseline__item"><span class="baseline__label">生成时间</span><span class="baseline__value">2026-06-09 08:55</span></div>
+              <div class="baseline__item"><span class="baseline__label">T day</span><span class="baseline__value">2026-06-08</span></div>
+              <div class="baseline__item"><span class="baseline__label">T+1</span><span class="baseline__value">2026-06-09</span></div>
+              <div class="baseline__item"><span class="baseline__label">EvidenceCutoff</span><span class="baseline__value">2026-06-09 08:55</span></div>
+              <div class="baseline__item"><span class="baseline__label">输出状态</span><span class="baseline__value">normal output</span></div>
+            </div>
+          </div>
+
+          <div class="score-ring hero__panel" aria-label="市场情绪评分">
+            <div class="ring" role="img" aria-label="市场情绪评分 6 分，满分 10 分">
+              <div class="ring__inner">
+                <div>
+                  <span class="ring__number">6</span>
+                  <span class="ring__label">sentiment / 10</span>
+                </div>
+              </div>
+            </div>
+            <p>主线扩散，但全市场强分歧。</p>
+          </div>
+        </div>
+
+        <div class="decision-strip" aria-label="决策指标">
+          <div class="metric-tile">
+            <span class="metric-tile__label">Top2 状态</span>
+            <span class="metric-tile__value">candidates exist</span>
+            <span class="metric-tile__hint">协议内正常输出</span>
+          </div>
+          <div class="metric-tile">
+            <span class="metric-tile__label">最高星级</span>
+            <span class="metric-tile__value">4★</span>
+            <span class="metric-tile__hint">不适合给 5★</span>
+          </div>
+          <div class="metric-tile">
+            <span class="metric-tile__label">K6</span>
+            <span class="metric-tile__value">2 / 2 yes</span>
+            <span class="metric-tile__hint">存在正交增量</span>
+          </div>
+          <div class="metric-tile">
+            <span class="metric-tile__label">Veto</span>
+            <span class="metric-tile__value">none</span>
+            <span class="metric-tile__hint">Top2 未触发否决</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="top2">
+      <div class="section__inner">
+        <div class="section-head">
+          <div class="section-head__text">
+            <h2>Top2 候选压缩卡</h2>
+            <p class="section-desc">切换摘要/审计视图，可展开 K1-K6 的分项依据和计算路径。</p>
+          </div>
+          <div class="segmented" role="group" aria-label="视图切换">
+            <button type="button" data-view-toggle="summary" aria-pressed="true">摘要</button>
+            <button type="button" data-view-toggle="audit" aria-pressed="false">审计</button>
+          </div>
+        </div>
+
+        <div class="candidate-grid">
+          <article class="candidate-card">
+            <div class="candidate-card__top">
+              <div class="stock-title">
+                <h3>埃斯顿</h3>
+                <div class="stock-code">002747 · 用户池容量核心</div>
+              </div>
+              <span class="rank">1</span>
+            </div>
+            <div class="pill-row">
+              <span class="pill pill--success">Final 78</span>
+              <span class="pill pill--success">Confidence 75</span>
+              <span class="pill">4★</span>
+              <span class="pill pill--success">K6 yes</span>
+              <span class="pill">Veto none</span>
+            </div>
+            <p class="candidate-card__conclusion">机器人主线逆势扩散，埃斯顿具备直接业务映射、较强容量和 W2 风险清理。</p>
+            <div class="score-grid audit-only">
+              <div class="score-box"><span>BaseScore</span><strong>82</strong></div>
+              <div class="score-box"><span>Penalty</span><strong>-4</strong></div>
+              <div class="score-box"><span>RawScore</span><strong>78</strong></div>
+              <div class="score-box"><span>MarketCap</span><strong>100</strong></div>
+              <div class="score-box"><span>VetoCap</span><strong>100</strong></div>
+              <div class="score-box"><span>Final</span><strong>78</strong></div>
+            </div>
+            <div class="gate-list audit-only">
+              <details>
+                <summary>K1 · 18/22 · pass</summary>
+                <div class="gate-body">
+                  <div class="gate-score"><span>K1</span><div class="bar"><span style="--w:82%"></span></div><span>18/22</span></div>
+                  工业机器人与智能制造主业映射清晰；2026Q1 归母净利润同比大增，机器人业务占比与行业地位可验证。新浪龙虎榜资料显示其主营为工业机器人及智能制造系统，2026Q1 归母净利润同比增长 674.64%。
+                </div>
+              </details>
+              <details>
+                <summary>K2 · 15/18 · pass</summary>
+                <div class="gate-body">
+                  <div class="gate-score"><span>K2</span><div class="bar"><span style="--w:83%"></span></div><span>15/18</span></div>
+                  机器人为 T day 逆势主线，具备梯队和板块宽度。
+                </div>
+              </details>
+              <details>
+                <summary>K3 · 14/18 · pass</summary>
+                <div class="gate-body">
+                  <div class="gate-score"><span>K3</span><div class="bar"><span style="--w:78%"></span></div><span>14/18</span></div>
+                  用户池内最直接的机器人容量核心，但外部中重科技、达实智能等更高位形成替代压力。
+                </div>
+              </details>
+              <details>
+                <summary>K4 · 11/16 · pass</summary>
+                <div class="gate-body">
+                  <div class="gate-score"><span>K4</span><div class="bar"><span style="--w:69%"></span></div><span>11/16</span></div>
+                  用户提供实际换手 22.65%，偏高但未到极端；午盘封单金额居前，结构可承受但不适合给 5★。
+                </div>
+              </details>
+              <details>
+                <summary>K5 · 12/14 · pass</summary>
+                <div class="gate-body">
+                  <div class="gate-score"><span>K5</span><div class="bar"><span style="--w:86%"></span></div><span>12/14</span></div>
+                  W2 异动公告未发现应披露未披露重大事项，公司称生产经营正常。
+                </div>
+              </details>
+              <details>
+                <summary>K6 · 10/12 · pass</summary>
+                <div class="gate-body">
+                  <div class="gate-score"><span>K6</span><div class="bar"><span style="--w:83%"></span></div><span>10/12</span></div>
+                  独立增量来自“用户池容量核心+机器人主线逆势扩散”，不是单纯由 K1-K5 总分推导。
+                </div>
+              </details>
+            </div>
+          </article>
+
+          <article class="candidate-card">
+            <div class="candidate-card__top">
+              <div class="stock-title">
+                <h3>宁波东力</h3>
+                <div class="stock-code">002164 · 分支前排补涨</div>
+              </div>
+              <span class="rank">2</span>
+            </div>
+            <div class="pill-row">
+              <span class="pill pill--success">Final 78</span>
+              <span class="pill pill--success">Confidence 69</span>
+              <span class="pill">4★</span>
+              <span class="pill pill--success">K6 yes</span>
+              <span class="pill">Veto none</span>
+            </div>
+            <p class="candidate-card__conclusion">减速器分支有独立公司进展，且与 T day 主线同步，但受外部更高位同题材压制。</p>
+            <div class="score-grid audit-only">
+              <div class="score-box"><span>BaseScore</span><strong>82</strong></div>
+              <div class="score-box"><span>Penalty</span><strong>-4</strong></div>
+              <div class="score-box"><span>RawScore</span><strong>78</strong></div>
+              <div class="score-box"><span>DominanceCap</span><strong>82</strong></div>
+              <div class="score-box"><span>VetoCap</span><strong>100</strong></div>
+              <div class="score-box"><span>Final</span><strong>78</strong></div>
+            </div>
+            <div class="gate-list audit-only">
+              <details>
+                <summary>K1 · 19/22 · pass</summary>
+                <div class="gate-body">
+                  <div class="gate-score"><span>K1</span><div class="bar"><span style="--w:86%"></span></div><span>19/22</span></div>
+                  公司精密减速器已小批量供货，新基地规划产能明确，能解释机器人/减速器分支攻击。公司投资者关系记录显示，精密减速器处于小批量供货阶段，并规划年产 30 万台套谐波减速机、60 万台套精密行星减速机。
+                </div>
+              </details>
+              <details>
+                <summary>K2 · 16/18 · pass</summary>
+                <div class="gate-body">
+                  <div class="gate-score"><span>K2</span><div class="bar"><span style="--w:89%"></span></div><span>16/18</span></div>
+                  减速器为机器人主线的强分支，T day 有宁波东力、丰光精密等反馈。
+                </div>
+              </details>
+              <details>
+                <summary>K3 · 13/18 · pass</summary>
+                <div class="gate-body">
+                  <div class="gate-score"><span>K3</span><div class="bar"><span style="--w:72%"></span></div><span>13/18</span></div>
+                  用户池内减速器分支前排，但外部丰光精密、中重科技形成更高辨识度压力。
+                </div>
+              </details>
+              <details>
+                <summary>K4 · 12/16 · pass</summary>
+                <div class="gate-body">
+                  <div class="gate-score"><span>K4</span><div class="bar"><span style="--w:75%"></span></div><span>12/16</span></div>
+                  用户提供实际换手 18.01%，处于可接受区间；午盘已涨停，封单金额不及埃斯顿但结构不弱。
+                </div>
+              </details>
+              <details>
+                <summary>K5 · 12/14 · pass</summary>
+                <div class="gate-body">
+                  <div class="gate-score"><span>K5</span><div class="bar"><span style="--w:86%"></span></div><span>12/14</span></div>
+                  W2 异动公告显示无应披露未披露事项、经营正常、控股股东未买卖股票。
+                </div>
+              </details>
+              <details>
+                <summary>K6 · 10/12 · pass</summary>
+                <div class="gate-body">
+                  <div class="gate-score"><span>K6</span><div class="bar"><span style="--w:83%"></span></div><span>10/12</span></div>
+                  独立增量来自“减速器分支前排+公司小批量供货/订单放量预期”，不是由总分反推。
+                </div>
+              </details>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="panorama">
+      <div class="section__inner">
+        <div class="section-head">
+          <div class="section-head__text">
+            <h2>市场与主题全景</h2>
+            <p class="section-desc">主线有高度、有宽度，但后排拥挤；页面仅呈现原报告中的外部参考，不把它们纳入 Top2。</p>
+          </div>
+        </div>
+
+        <div class="story-grid">
+          <article class="audit-card">
+            <h3>市场不是普涨环境</h3>
+            <p>证券时报收评显示，上证指数跌 1.7%，深成指跌 3.22%，创业板指跌 3.69%，全市场超 4500 只个股下跌。但机器人概念逆市活跃，埃斯顿涨停，减速器概念也居前。</p>
+          </article>
+          <article class="audit-card">
+            <h3>机器人方向具备完整梯队</h3>
+            <p>机器人概念当日共 16 家涨停、3 家连板，最高板为中重科技 4板，达实智能 2板，宁波东力、埃斯顿等为首板。外部参考包括中重科技、达实智能、丰光精密、锋龙股份，用于比较高度、弹性和替代压力。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="matrix">
+      <div class="section__inner">
+        <div class="section-head">
+          <div class="section-head__text">
+            <h2>候选排序与淘汰矩阵</h2>
+            <p class="section-desc">可按状态筛选、按 Final/Confidence 排序，或直接搜索股票、主线、规则。</p>
+          </div>
+        </div>
+
+        <div class="matrix-tools tool-panel">
+          <label class="search">
+            <span class="skip-link">搜索矩阵</span>
+            <input id="matrixSearch" type="search" placeholder="搜索股票、规则或主线" autocomplete="off">
+          </label>
+          <div class="filter-buttons" role="group" aria-label="矩阵筛选">
+            <button type="button" data-filter="all" aria-pressed="true">全部</button>
+            <button type="button" data-filter="top2" aria-pressed="false">Top2</button>
+            <button type="button" data-filter="eliminated" aria-pressed="false">淘汰</button>
+            <button type="button" data-filter="risk" aria-pressed="false">风险</button>
+          </div>
+        </div>
+
+        <div class="table-wrap" role="region" aria-label="候选排序表" tabindex="0">
+          <table id="candidateTable">
+            <thead>
+              <tr>
+                <th><button class="sortable" type="button" data-sort="rank">Rank <span class="sort-mark">↕</span></button></th>
+                <th>Stock</th>
+                <th>Main-line anchor</th>
+                <th><button class="sortable" type="button" data-sort="final">Final <span class="sort-mark">↕</span></button></th>
+                <th><button class="sortable" type="button" data-sort="confidence">Confidence <span class="sort-mark">↕</span></button></th>
+                <th>Star</th>
+                <th>K6</th>
+                <th>Veto</th>
+                <th>Top2 eligibility / elimination reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-status="top2" data-rank="1" data-final="78" data-confidence="75">
+                <td class="num">1</td>
+                <td><strong>埃斯顿</strong><br><span class="muted">002747</span></td>
+                <td>机器人/工业机器人</td>
+                <td class="num">78</td>
+                <td class="num">75</td>
+                <td>4★</td>
+                <td><span class="pill pill--success">yes</span></td>
+                <td>none</td>
+                <td>yes · 用户池容量核心+机器人主线逆势扩散</td>
+              </tr>
+              <tr data-status="top2" data-rank="2" data-final="78" data-confidence="69">
+                <td class="num">2</td>
+                <td><strong>宁波东力</strong><br><span class="muted">002164</span></td>
+                <td>机器人/减速器</td>
+                <td class="num">78</td>
+                <td class="num">69</td>
+                <td>4★</td>
+                <td><span class="pill pill--success">yes</span></td>
+                <td>none</td>
+                <td>yes · 减速器分支前排+公司精密减速器小批量供货</td>
+              </tr>
+              <tr data-status="eliminated" data-rank="3" data-final="70" data-confidence="63">
+                <td class="num">3</td>
+                <td><strong>山东墨龙</strong><br><span class="muted">002490</span></td>
+                <td>油气设服</td>
+                <td class="num">70</td>
+                <td class="num">63</td>
+                <td>3★</td>
+                <td><span class="pill pill--warn">highly uncertain</span></td>
+                <td>none</td>
+                <td>no，K6 不足；仅能由竞价确认修复</td>
+              </tr>
+              <tr data-status="risk eliminated" data-rank="4" data-final="66" data-confidence="58">
+                <td class="num">4</td>
+                <td><strong>大业股份</strong><br><span class="muted">603278</span></td>
+                <td>机器人边缘/经营改善</td>
+                <td class="num">66</td>
+                <td class="num">58</td>
+                <td>3★</td>
+                <td><span class="pill pill--warn">highly uncertain</span></td>
+                <td><span class="pill pill--danger">Major</span></td>
+                <td>no，K4 过度换手；需强竞价修复</td>
+              </tr>
+              <tr data-status="eliminated" data-rank="5" data-final="61" data-confidence="56">
+                <td class="num">5</td>
+                <td><strong>国晟科技</strong><br><span class="muted">603778</span></td>
+                <td>光伏/股权预期</td>
+                <td class="num">61</td>
+                <td class="num">56</td>
+                <td>3★</td>
+                <td><span class="pill">no</span></td>
+                <td>none</td>
+                <td>no，K2/K6 不足；需新催化修复</td>
+              </tr>
+              <tr data-status="eliminated risk" data-rank="6" data-final="56" data-confidence="0">
+                <td class="num">-</td>
+                <td><strong>津药药业</strong></td>
+                <td>医药</td>
+                <td class="num">56</td>
+                <td class="muted">未列</td>
+                <td>2★</td>
+                <td><span class="pill">不足</span></td>
+                <td>none</td>
+                <td>医药线弱，且前期已有明显炒作风险记录；K2/K5/K6 不足</td>
+              </tr>
+              <tr data-status="eliminated risk" data-rank="7" data-final="54" data-confidence="0">
+                <td class="num">-</td>
+                <td><strong>中央商场</strong></td>
+                <td>零售</td>
+                <td class="num">54</td>
+                <td class="muted">未列</td>
+                <td>2★</td>
+                <td><span class="pill">不足</span></td>
+                <td>none</td>
+                <td>零售线未形成 T day 主线，27% 换手偏高；K2/K4/K6 不足</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="legend" aria-label="图例">
+          <span><i class="success-dot"></i>K6 yes / 通过</span>
+          <span><i class="warn-dot"></i>不确定或需竞价修复</span>
+          <span><i class="danger-dot"></i>Major 风险</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="timeline">
+      <div class="section__inner">
+        <div class="section-head">
+          <div class="section-head__text">
+            <h2>审计基线与时间过滤</h2>
+            <p class="section-desc">交易日校验、W0/W1/W2/W3 切片、G0 和输出状态均按原报告呈现。</p>
+          </div>
+        </div>
+
+        <div class="story-grid">
+          <article class="audit-card">
+            <h3>Snapshot and Audit Baseline</h3>
+            <p>G0 definability pass；Time filtering status pass；Output status normal output。W3 不适用，本报告截止于 2026-06-09 08:55，未纳入 09:15-09:25 竞价确认。</p>
+            <div class="timeline">
+              <div class="timeline__item">
+                <span class="timeline__dot" aria-hidden="true"></span>
+                <div><div class="timeline__label">W0</div><div class="timeline__time">起点 -> 2026-06-08 09:15</div></div>
+              </div>
+              <div class="timeline__item">
+                <span class="timeline__dot" aria-hidden="true"></span>
+                <div><div class="timeline__label">W1</div><div class="timeline__time">2026-06-08 09:15 -> 2026-06-08 15:00</div></div>
+              </div>
+              <div class="timeline__item">
+                <span class="timeline__dot" aria-hidden="true"></span>
+                <div><div class="timeline__label">W2</div><div class="timeline__time">2026-06-08 15:00 -> 2026-06-09 08:55</div></div>
+              </div>
+              <div class="timeline__item">
+                <span class="timeline__dot" aria-hidden="true"></span>
+                <div><div class="timeline__label">W3</div><div class="timeline__time">不适用</div></div>
+              </div>
+            </div>
+          </article>
+          <article class="audit-card">
+            <h3>交易日校验</h3>
+            <p>上交所、深交所 2026 年休市安排中，6月休市为端午节 2026-06-19 至 2026-06-21，故 2026-06-08 与 2026-06-09 均按正常交易日处理。沪深两所休市安排见上交所、深交所公告。</p>
+            <details>
+              <summary>Key audit conclusion</summary>
+              <div class="gate-body">pass。输入、时间、G0、K1-K6、K6 orthogonal increment、Veto、Cap、同题材非支配、数学计算与输出清洁均完成；Final 为协议内相对排序分，不是真实概率。</div>
+            </details>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="risks">
+      <div class="section__inner">
+        <div class="section-head">
+          <div class="section-head__text">
+            <h2>风险与观察变量</h2>
+            <p class="section-desc">风险按影响范围和报告原始等级呈现，Top2 仍需 09:15-09:25 竞价确认。</p>
+          </div>
+        </div>
+
+        <div class="risk-grid">
+          <article class="risk-card">
+            <div>
+              <h3>大盘宽度极弱</h3>
+              <p>全市场超 4500 只下跌，若风险偏好继续收缩，二板接力容错会下降。</p>
+            </div>
+            <div class="risk-card__meta"><span class="pill pill--danger">high</span><span class="pill">影响：全部</span></div>
+          </article>
+          <article class="risk-card">
+            <div>
+              <h3>外部同题材更高位替代</h3>
+              <p>中重科技、达实智能、丰光精密等可能吸收机器人方向优先资金。</p>
+            </div>
+            <div class="risk-card__meta"><span class="pill pill--warn">medium</span><span class="pill">埃斯顿</span><span class="pill">宁波东力</span></div>
+          </article>
+          <article class="risk-card">
+            <div>
+              <h3>高换手结构分歧</h3>
+              <p>埃斯顿 22.65%、宁波东力 18.01% 均需增量承接确认。</p>
+            </div>
+            <div class="risk-card__meta"><span class="pill pill--warn">medium</span><span class="pill">结构承接</span></div>
+          </article>
+          <article class="risk-card">
+            <div>
+              <h3>W3 未使用</h3>
+              <p>本报告截止于 2026-06-09 08:55，未纳入 09:15-09:25 竞价确认。</p>
+            </div>
+            <div class="risk-card__meta"><span class="pill pill--warn">medium</span><span class="pill">Top2</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="disclaimer">
+    <div class="section__inner">
+      <p><strong>免责声明：</strong>本协议仅用于公开信息下的结构化研究与概率推理，不构成任何投资建议、买卖指令、仓位建议或收益承诺。A 股短线接力博弈高度非线性，任何模型化判断都可能失效。</p>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">已复制时间基线</div>
+
+  <script>
+    (() => {
+      const body = document.body;
+      const progressBar = document.getElementById('progressBar');
+      const navLinks = Array.from(document.querySelectorAll('.nav a[href^="#"]'));
+      const sections = navLinks
+        .map((link) => document.querySelector(link.getAttribute('href')))
+        .filter(Boolean);
+      const toast = document.getElementById('toast');
+
+      const updateProgress = () => {
+        if (!progressBar) return;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = max > 0 ? (window.scrollY / max) * 100 : 0;
+        progressBar.style.width = `${Math.min(100, Math.max(0, pct))}%`;
+      };
+
+      window.addEventListener('scroll', updateProgress, { passive: true });
+      updateProgress();
+
+      if ('IntersectionObserver' in window && sections.length) {
+        const observer = new IntersectionObserver((entries) => {
+          const visible = entries
+            .filter((entry) => entry.isIntersecting)
+            .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+          if (!visible) return;
+          navLinks.forEach((link) => {
+            link.classList.toggle('is-active', link.getAttribute('href') === `#${visible.target.id}`);
+          });
+        }, { rootMargin: '-28% 0px -58% 0px', threshold: [0.12, 0.24, 0.5] });
+        sections.forEach((section) => observer.observe(section));
+      }
+
+      const viewButtons = Array.from(document.querySelectorAll('[data-view-toggle]'));
+      viewButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const nextView = button.dataset.viewToggle || 'summary';
+          body.dataset.view = nextView;
+          viewButtons.forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+        });
+      });
+
+      const copyButton = document.getElementById('copyBaseline');
+      const baseline = document.getElementById('baselineText');
+      const showToast = (message) => {
+        if (!toast) return;
+        toast.textContent = message;
+        toast.classList.add('is-visible');
+        window.setTimeout(() => toast.classList.remove('is-visible'), 1800);
+      };
+
+      copyButton?.addEventListener('click', async () => {
+        const text = baseline?.innerText?.trim() || 'T day=2026-06-08 | T+1=2026-06-09 | EvidenceCutoff=2026-06-09 08:55';
+        try {
+          await navigator.clipboard.writeText(text);
+          showToast('已复制时间基线');
+        } catch {
+          const area = document.createElement('textarea');
+          area.value = text;
+          area.setAttribute('readonly', '');
+          area.style.position = 'fixed';
+          area.style.opacity = '0';
+          document.body.appendChild(area);
+          area.select();
+          const ok = document.execCommand('copy');
+          area.remove();
+          showToast(ok ? '已复制时间基线' : '复制失败，请手动选择');
+        }
+      });
+
+      const table = document.getElementById('candidateTable');
+      const search = document.getElementById('matrixSearch');
+      const filterButtons = Array.from(document.querySelectorAll('[data-filter]'));
+      const getRows = () => table ? Array.from(table.querySelectorAll('tbody tr')) : [];
+      let currentFilter = 'all';
+      let currentSort = { key: 'rank', direction: 'asc' };
+
+      const normalize = (value) => String(value || '').toLowerCase().trim();
+
+      const applyMatrixState = () => {
+        const query = normalize(search?.value);
+        getRows().forEach((row) => {
+          const status = normalize(row.dataset.status);
+          const text = normalize(row.innerText);
+          const matchesFilter = currentFilter === 'all' || status.includes(currentFilter);
+          const matchesQuery = !query || text.includes(query);
+          row.hidden = !(matchesFilter && matchesQuery);
+        });
+      };
+
+      search?.addEventListener('input', applyMatrixState);
+
+      filterButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          currentFilter = button.dataset.filter || 'all';
+          filterButtons.forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+          applyMatrixState();
+        });
+      });
+
+      const sortRows = (key) => {
+        if (!table) return;
+        const tbody = table.querySelector('tbody');
+        if (!tbody) return;
+        currentSort.direction = currentSort.key === key && currentSort.direction === 'asc' ? 'desc' : 'asc';
+        currentSort.key = key;
+        const direction = currentSort.direction === 'asc' ? 1 : -1;
+        const rows = getRows().sort((a, b) => {
+          const av = Number(a.dataset[key] || 0);
+          const bv = Number(b.dataset[key] || 0);
+          return (av - bv) * direction;
+        });
+        rows.forEach((row) => tbody.appendChild(row));
+        applyMatrixState();
+      };
+
+      document.querySelectorAll('[data-sort]').forEach((button) => {
+        button.addEventListener('click', () => sortRows(button.dataset.sort));
+      });
+
+      applyMatrixState();
+    })();
+  </script>
+</body>
+</html>
